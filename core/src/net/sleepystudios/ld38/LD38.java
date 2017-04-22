@@ -44,7 +44,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener {
 
 	public void sendRequest(String route, String method, JSONObject reqObj) {
 		Net.HttpRequest req = new Net.HttpRequest(method);
-		String url = "http://localhost:3000/" + route;
+		String url = "http://35.156.58.36:3000/" + route;
 		String content = "";
 		if(reqObj!=null) content = new Json(JsonWriter.OutputType.json).toJson(reqObj);
 
@@ -57,13 +57,33 @@ public class LD38 extends ApplicationAdapter implements ActionListener {
 	}
 
     public String getStr(String data, Object key) {
-        JSONObject obj = new Json().fromJson(JSONObject.class, data);
-
-        if(obj.get(key)!=null) {
-            return obj.get(key).toString();
-        } else {
-            return "null";
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(data);
+            JSONObject jsonObject = (JSONObject) obj;
+            if(jsonObject.get(key)!=null) {
+                return (String) jsonObject.get(key);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+
+        return "null";
+    }
+
+    public long getInt(String data, Object key) {
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(data);
+            JSONObject jsonObject = (JSONObject) obj;
+            if(jsonObject.get(key)!=null) {
+                return (Long) jsonObject.get(key);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
     }
 
     public JSONArray getArray(String data, Object key) {
@@ -90,6 +110,13 @@ public class LD38 extends ApplicationAdapter implements ActionListener {
         return null;
     }
 
+    public Player getPlayerByID(String id) {
+        for(int i=0; i<players.size(); i++) {
+            if(players.get(i).id.equals(id)) return players.get(i);
+        }
+        return null;
+    }
+
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -99,7 +126,8 @@ public class LD38 extends ApplicationAdapter implements ActionListener {
 
         for(int i=0; i<players.size(); i++) {
             Player p = players.get(i);
-            font.draw(batch, p.name, 20, Gdx.graphics.getHeight() - (i*30));
+            p.update();
+            font.draw(batch, p.name, p.x, p.y);
         }
 
 		batch.end();

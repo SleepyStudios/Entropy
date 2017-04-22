@@ -32,29 +32,34 @@ public class ResponseListener implements Net.HttpResponseListener {
             if(head.equals("players")) {
                 // get the array
                 JSONArray arr = game.getArray(res.resObj, "players");
-                ArrayList<String> names = new ArrayList<String>();
-
+                ArrayList<String> ids = new ArrayList<String>();
                 for(int i=0; i<arr.size(); i++) {
                     // make sure they're not a dupe
-                    String name = game.getStr(arr.get(i).toString(), "name");
-                    if(!dupe(name)) {
+                    String id = game.getStr(arr.get(i).toString(), "id");
+                    if(!dupe(id)) {
                         game.players.add(new Player(game, arr.get(i).toString()));
+                    } else {
+                        // update position if they are
+                        if(!id.equals(game.me)) {
+                            game.getPlayerByID(id).x = game.getInt(arr.get(i).toString(), "x");
+                            game.getPlayerByID(id).y = game.getInt(arr.get(i).toString(), "y");
+                        }
                     }
 
-                    names.add(name);
+                    ids.add(id);
                 }
 
                 // compare for removals
                 for(int i=0; i<game.players.size(); i++) {
-                    if(!names.contains(game.players.get(i).name)) game.players.remove(i);
+                    if(!ids.contains(game.players.get(i).id)) game.players.remove(i);
                 }
             }
         }
     }
 
-    private boolean dupe(String name) {
+    private boolean dupe(String id) {
         for(int i=0; i<game.players.size(); i++) {
-            if(game.players.get(i).name.equals(name)) return true;
+            if(game.players.get(i).id.equals(id)) return true;
         }
         return false;
     }
