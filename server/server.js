@@ -20,6 +20,7 @@ db.defaults({ users: [], map: {} })
 // players
 var players = [];
 
+// joining
 app.post('/player', function (req, res) {
   var ip = req.headers['x-forwarded-for'] || 
            req.connection.remoteAddress || 
@@ -33,6 +34,24 @@ app.post('/player', function (req, res) {
   res.json({head: "login_accept", name: player.name, id: player.id});
 });
 
+// player list
 app.get('/players', function (req, res) {
   res.json({head: "players", players: players});
+});
+
+// exiting
+app.delete('/player', function (req, res) {
+  var ip = req.headers['x-forwarded-for'] || 
+           req.connection.remoteAddress || 
+           req.socket.remoteAddress ||
+           req.connection.socket.remoteAddress;
+
+  for(var i=0; i<players.length; i++) {
+    if(players[i].id==ip) {
+      console.log("Removed player: " + players[i].name);
+      players.splice(i, 1);
+    }
+  }
+
+  res.json({head: "exit"});
 });

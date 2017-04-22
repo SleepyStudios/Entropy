@@ -15,9 +15,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class LD38 extends ApplicationAdapter {
+public class LD38 extends ApplicationAdapter implements ActionListener {
 	SpriteBatch batch;
 	Texture img;
     BitmapFont font;
@@ -80,6 +82,14 @@ public class LD38 extends ApplicationAdapter {
         return null;
     }
 
+    String me;
+    public Player getMe() {
+	    for(int i=0; i<players.size(); i++) {
+	        if(players.get(i).id.equals(me)) return players.get(i);
+        }
+        return null;
+    }
+
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -100,7 +110,15 @@ public class LD38 extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
-		img.dispose();
+		// remove
+        sendRequest("player", "DELETE", null);
+
+        batch.dispose();
+        img.dispose();
 	}
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
 }
