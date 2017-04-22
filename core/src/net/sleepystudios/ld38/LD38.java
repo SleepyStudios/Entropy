@@ -9,36 +9,42 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class LD38 extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
     BitmapFont font;
     ResponseListener rl;
-    public static String name;
+    String name;
+    ArrayList<Player> players = new ArrayList<Player>();
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("background.bmp");
 		font = new BitmapFont();
-        rl = new ResponseListener();
+        rl = new ResponseListener(this);
 
 		// add the new user
         String name = JOptionPane.showInputDialog(new JFrame(), "What's your name?");
 		JSONObject obj = new JSONObject();
 		obj.put("name", name);
 
-		sendRequest("user", "POST", obj);
+		sendRequest("player", "POST", obj);
 	}
 
 	public void sendRequest(String route, String method, JSONObject reqObj) {
 		Net.HttpRequest req = new Net.HttpRequest(method);
 		String url = "http://localhost:3000/" + route;
-		String content = new Json(JsonWriter.OutputType.json).toJson(reqObj);
+		String content = "";
+		if(reqObj!=null) content = new Json(JsonWriter.OutputType.json).toJson(reqObj);
 
         req.setUrl(url);
         req.setContent(content);
@@ -48,6 +54,32 @@ public class LD38 extends ApplicationAdapter {
 		Gdx.net.sendHttpRequest(req, rl);
 	}
 
+    public String getStr(String data, Object key) {
+        JSONObject obj = new Json().fromJson(JSONObject.class, data);
+
+        if(obj.get(key)!=null) {
+            return obj.get(key).toString();
+        } else {
+            return "null";
+        }
+    }
+
+    public JSONArray getArray(String data, Object key) {
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(data);
+            JSONObject jsonObject = (JSONObject) obj;
+            if(jsonObject.get(key)!=null) {
+                JSONArray arr = (JSONArray) jsonObject.get(key);
+                return arr;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -55,11 +87,15 @@ public class LD38 extends ApplicationAdapter {
 		batch.begin();
 		batch.draw(img, 0, 0);
 
-		if(name!=null) {
-		    font.draw(batch, "Your name is: " + name, 20, 30);
+        for(int i=0; i<players.size(); i++) {
+            Player p = players.get(i);
+            font.draw(batch, p.name, 20, Gdx.graphics.getHeight() - (i*30));
         }
 
 		batch.end();
+
+        // get players
+        sendRequest("players", "GET", null);
 	}
 	
 	@Override

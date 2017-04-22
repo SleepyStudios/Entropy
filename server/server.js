@@ -17,18 +17,22 @@ var db = low('db.json');
 db.defaults({ users: [], map: {} }) 
   .write();
 
-app.post('/user', function (req, res) {
-  // TODO duplicates
-  // db.get('users')
-  //   .push({name: req.body.name.value})
-  //   .write();
+// players
+var players = [];
 
-  console.log("Added user: " + req.body.name.value);
-
+app.post('/player', function (req, res) {
   var ip = req.headers['x-forwarded-for'] || 
            req.connection.remoteAddress || 
            req.socket.remoteAddress ||
            req.connection.socket.remoteAddress;
 
-  res.json({head: "login_accept", name: req.body.name.value, ip: ip});
+  var player = {name: req.body.name.value, id: ip};
+  players.push(player);
+  console.log("Added player: " + req.body.name.value);
+
+  res.json({head: "login_accept", name: player.name, id: player.id});
+});
+
+app.get('/players', function (req, res) {
+  res.json({head: "players", players: players});
 });
