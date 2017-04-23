@@ -11,6 +11,7 @@ public class Entity {
     float x, y;
     int type;
     float scale;
+    int waterLevel = 75;
 
     public Entity(LD38 game, float x, float y, int type) {
         this.game = game;
@@ -35,11 +36,16 @@ public class Entity {
         return false;
     }
 
-    int children;
+    int children; boolean canSpread;
     public void update() {
         scale+=0.1f;
 
         if(scale>=0.9f) {
+            // plant
+            if(type==game.PLANT) {
+                if(waterLevel>=50) canSpread = true;
+            }
+
             // fire
             if(type==game.FIRE) {
                 for(int i=0; i<game.entities.size(); i++) {
@@ -47,11 +53,18 @@ public class Entity {
 
                     if(other!=null && other!=this && other.type==game.PLANT) {
                         if(collides(x, y, other.x, other.y, 12)) {
-                            // destroy the plant
-                            Packets.RemoveEntity re = new Packets.RemoveEntity();
-                            re.id = other.id;
-                            game.server.sendToAllTCP(re);
-                            game.entities.remove(other);
+                            // takeaway water
+                            other.waterLevel -= 15;
+
+                            if(other.waterLevel<=0) {
+                                // destroy the plant
+                                Packets.RemoveEntity re = new Packets.RemoveEntity();
+                                re.id = other.id;
+                                game.server.sendToAllTCP(re);
+                                game.entities.remove(other);
+                            }
+
+                            canSpread = true;
                         }
                     }
                 }
@@ -62,13 +75,20 @@ public class Entity {
                 for(int i=0; i<game.entities.size(); i++) {
                     Entity other = game.entities.get(i);
 
-                    if(other!=this && other.type==game.FIRE) {
-                        if(collides(x-16, y-16, other.x, other.y, 48)) {
-                            // destroy the fire
-                            Packets.RemoveEntity re = new Packets.RemoveEntity();
-                            re.id = other.id;
-                            game.server.sendToAllTCP(re);
-                            game.entities.remove(other);
+                    if(other!=this) {
+                        if(other.type==game.FIRE) {
+                            if(collides(x-16, y-16, other.x, other.y, 48)) {
+                                // destroy the fire
+                                Packets.RemoveEntity re = new Packets.RemoveEntity();
+                                re.id = other.id;
+                                game.server.sendToAllTCP(re);
+                                game.entities.remove(other);
+                            }
+                        } else if(other.type==game.PLANT) {
+                            if(collides(x-16, y-16, other.x, other.y, 48)) {
+                                // give it water
+                                other.waterLevel+=50;
+                            }
                         }
                     }
                 }
@@ -81,14 +101,15 @@ public class Entity {
             }
         }
 
-
-        if(scale>=2f && children<3 && game.getPlantCount()>0) {
+        // spreading
+        if(scale>=2f && canSpread && children<3 && game.getPlantCount()>0) {
             int offset = 24;
             float nx = x + game.rand(-offset, offset);
             float ny = y + game.rand(-offset, offset);
 
             if(!collidesType(nx, ny) && nx>0 && nx<640 && ny>0 && ny<480) {
                 Entity e = new Entity(game, nx, ny, type);
+                if(type==game.PLANT) e.waterLevel = waterLevel-10;
                 game.entities.add(e);
 
                 Packets.Entity ne = new Packets.Entity();
@@ -102,7 +123,9 @@ public class Entity {
             }
         }
 
-        if(scale>=8f) {
+        float maxScale = 8f;
+        if(type==game.FIRE) maxScale = 5f;
+        if(scale>=maxScale) {
             // kill it off
             Packets.RemoveEntity re = new Packets.RemoveEntity();
             re.id = id;

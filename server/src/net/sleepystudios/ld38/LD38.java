@@ -62,8 +62,8 @@ public class LD38 {
 
         tmrStats+=delta;
         if(tmrStats>=30) {
-            System.out.println("[STATS] " + players.size() + " players online");
-            System.out.println("[STATS] " + entities.size() + " entities");
+            if(players.size()>0) System.out.println("[STATS] " + players.size() + " players online");
+            if(entities.size()>0) System.out.println("[STATS] " + entities.size() + " entities");
             tmrStats = 0;
         }
     }
@@ -84,6 +84,7 @@ public class LD38 {
                 }
             }
 
+            if(counts[0]==0) return 0;
             if(counts[0]<counts[1] && counts[0]<counts[2]) return 0;
             if(counts[1]<counts[0] && counts[1]<counts[2]) return 1;
             if(counts[2]<counts[0] && counts[2]<counts[1]) return 2;

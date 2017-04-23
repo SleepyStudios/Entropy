@@ -2,18 +2,15 @@ package net.sleepystudios.ld38;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import net.sleepystudios.ld38.particles.ParticleBit;
 
 /**
  * Created by Tudor on 23/04/2017.
  */
 public class Receiver extends Listener {
     LD38 game;
-    String name;
 
-    public Receiver(LD38 game, String name) {
+    public Receiver(LD38 game) {
         this.game = game;
-        this.name = name;
     }
 
     @Override
@@ -21,7 +18,6 @@ public class Receiver extends Listener {
         super.connected(c);
 
         Packets.Join j = new Packets.Join();
-        j.name = name;
         c.sendTCP(j);
     }
 
@@ -30,13 +26,11 @@ public class Receiver extends Listener {
         super.received(c, o);
 
         if(o instanceof Packets.Join) {
-            String name = ((Packets.Join) o).name;
             int id = c.getID();
             int type = ((Packets.Join) o).type;
 
             game.me = id;
-            game.players.add(new Player(game, name, id));
-            game.getPlayerByID(id).type = type;
+            game.players.add(new Player(game, id, type));
         }
 
         if(o instanceof Packets.Leave) {
@@ -50,7 +44,7 @@ public class Receiver extends Listener {
         if(o instanceof Packets.NewPlayer) {
             Packets.NewPlayer np = ((Packets.NewPlayer) o);
 
-            game.players.add(new Player(game, np.name, np.id));
+            game.players.add(new Player(game, np.id, np.type));
             if(np.x!=0) game.getPlayerByID(np.id).x = np.x;
             if(np.y!=0) game.getPlayerByID(np.id).y = np.y;
         }

@@ -5,7 +5,7 @@ package net.sleepystudios.ld38;
  */
 public class Packets {
     public static class Join {
-        String name; int type;
+        int type;
     }
 
     public static class Leave {
@@ -13,8 +13,7 @@ public class Packets {
     }
 
     public static class NewPlayer {
-        String name;
-        int id;
+        int id, type;
         float x, y;
     }
 

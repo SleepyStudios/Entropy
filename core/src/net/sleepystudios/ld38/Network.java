@@ -18,13 +18,12 @@ public class Network {
         game.particles.clear();
 
         client = new Client(8192, 4096);
-        //JOptionPane.showInputDialog(new JFrame(), "Choose a name")
-        client.addListener(new Receiver(game, "player"));
+        client.addListener(new Receiver(game));
         client.start();
         register();
 
         try { //35.156.58.36
-            client.connect(10000, "localhost", 5000, 5001);
+            client.connect(10000, "35.156.58.36", 5000, 5001);
         } catch (IOException e) {
             e.printStackTrace();
         }

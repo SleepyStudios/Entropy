@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  */
 public class Player {
     private LD38 game;
-    String name;
     int id, type;
     float x = Gdx.graphics.getWidth()/2, y = Gdx.graphics.getHeight()/2;
 
@@ -23,16 +22,28 @@ public class Player {
     boolean moving;
     int ai;
 
-    public Player(LD38 game, String name, int id) {
+    public Player(LD38 game, int id, int type) {
         this.game = game;
-        this.name = name;
         this.id = id;
+        this.type = type;
     }
 
     boolean inited;
     public void initGraphics() {
+        String filename = "";
+        switch(type) {
+            case 0:
+                filename = "planter";
+                break;
+            case 1:
+                filename = "firestarter";
+                break;
+            case 2:
+                filename = "waterer";
+        }
+
         for(int i=0; i<anim.length; i++) {
-            anim[i] = new Animation(animSpeed, AnimGenerator.gen("player" + i + ".png", fw, fh));
+            anim[i] = new Animation(animSpeed, AnimGenerator.gen(filename + i + ".png", fw, fh));
             anim[i].setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         }
 

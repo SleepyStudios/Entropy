@@ -31,18 +31,18 @@ public class Receiver extends Listener {
 
         if(o instanceof Packets.Join) {
             // add them
-            String name = ((Packets.Join) o).name;
-            game.players.add(new Player(game, name, c.getID()));
+            game.players.add(new Player(game, c.getID()));
 
-            ((Packets.Join) o).type = game.getPlayerByID(c.getID()).type;
+            int type = game.getPlayerByID(c.getID()).type;
+            ((Packets.Join) o).type = type;
             c.sendTCP(o);
 
             String role = getRole(game.getPlayerByID(c.getID()));
-            System.out.println(name + " joined as a " + role + "!");
+            System.out.println("player joined as a " + role + "!");
 
             // send them to everyone else
             Packets.NewPlayer np = new Packets.NewPlayer();
-            np.name = name;
+            np.type = type;
             np.id = c.getID();
             game.server.sendToAllExceptTCP(c.getID(), np);
 
@@ -51,7 +51,7 @@ public class Receiver extends Listener {
                 Player p = game.players.get(i);
                 if(p.id!=c.getID()) {
                     np = new Packets.NewPlayer();
-                    np.name = p.name;
+                    np.type = p.type;
                     np.id = p.id;
                     np.x = p.x;
                     np.y = p.y;
@@ -106,7 +106,7 @@ public class Receiver extends Listener {
 
         Player p = game.getPlayerByID(c.getID());
         if(p!=null) {
-            System.out.println(p.name + " left!");
+            System.out.println("player left!");
 
             Packets.Leave l = new Packets.Leave();
             l.id = p.id;
