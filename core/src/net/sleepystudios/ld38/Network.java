@@ -13,13 +13,17 @@ public class Network {
     public Client client;
 
     public Network(LD38 game) {
+        game.players.clear();
+        game.entities.clear();
+        game.particles.clear();
+
         client = new Client(8192, 4096);
         //JOptionPane.showInputDialog(new JFrame(), "Choose a name")
         client.addListener(new Receiver(game, "player"));
         client.start();
         register();
 
-        try {
+        try { //35.156.58.36
             client.connect(10000, "localhost", 5000, 5001);
         } catch (IOException e) {
             e.printStackTrace();
@@ -34,5 +38,6 @@ public class Network {
         kryo.register(Packets.Move.class);
         kryo.register(Packets.Entity.class);
         kryo.register(Packets.RemoveEntity.class);
+        kryo.register(Packets.AddParticles.class);
     }
 }

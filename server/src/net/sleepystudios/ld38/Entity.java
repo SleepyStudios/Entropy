@@ -39,21 +39,48 @@ public class Entity {
     public void update() {
         scale+=0.1f;
 
-        if(type==game.FIRE && scale>=0.9f) {
-            for(int i=0; i<game.entities.size(); i++) {
-                Entity other = game.entities.get(i);
+        if(scale>=0.9f) {
+            // fire
+            if(type==game.FIRE) {
+                for(int i=0; i<game.entities.size(); i++) {
+                    Entity other = game.entities.get(i);
 
-                if(other!=this && other.type==game.PLANT) {
-                    if(collides(x, y, other.x, other.y, 12)) {
-                        // destroy the plant
-                        Packets.RemoveEntity re = new Packets.RemoveEntity();
-                        re.id = other.id;
-                        game.server.sendToAllTCP(re);
-                        game.entities.remove(other);
+                    if(other!=null && other!=this && other.type==game.PLANT) {
+                        if(collides(x, y, other.x, other.y, 12)) {
+                            // destroy the plant
+                            Packets.RemoveEntity re = new Packets.RemoveEntity();
+                            re.id = other.id;
+                            game.server.sendToAllTCP(re);
+                            game.entities.remove(other);
+                        }
                     }
                 }
             }
+
+            // water
+            if(type==game.WATER) {
+                for(int i=0; i<game.entities.size(); i++) {
+                    Entity other = game.entities.get(i);
+
+                    if(other!=this && other.type==game.FIRE) {
+                        if(collides(x-16, y-16, other.x, other.y, 48)) {
+                            // destroy the fire
+                            Packets.RemoveEntity re = new Packets.RemoveEntity();
+                            re.id = other.id;
+                            game.server.sendToAllTCP(re);
+                            game.entities.remove(other);
+                        }
+                    }
+                }
+
+                // destroy this too
+                Packets.RemoveEntity re = new Packets.RemoveEntity();
+                re.id = id;
+                game.server.sendToAllTCP(re);
+                game.entities.remove(this);
+            }
         }
+
 
         if(scale>=2f && children<3 && game.getPlantCount()>0) {
             int offset = 24;

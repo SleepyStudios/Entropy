@@ -14,7 +14,7 @@ public class LD38 {
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
 
-    final int PLANT = 0, FIRE = 1;
+    final int PLANT = 0, FIRE = 1, WATER = 2;
 
     public LD38() throws Exception {
         server = new Server(8192, 4096);
@@ -50,19 +50,45 @@ public class LD38 {
     }
 
 
-    float tmrScale;
+    float tmrScale, tmrStats;
     public void update(float delta) {
         tmrScale+=delta;
-        if(tmrScale>=0.5) {
+        if(tmrScale>=0.5 && players.size()>0) {
             for(int i=0; i<entities.size(); i++) {
                 entities.get(i).update();
             }
             tmrScale = 0;
         }
+
+        tmrStats+=delta;
+        if(tmrStats>=30) {
+            System.out.println("[STATS] " + players.size() + " players online");
+            System.out.println("[STATS] " + entities.size() + " entities");
+            tmrStats = 0;
+        }
     }
 
     public static int rand(int min, int max) {
         return new Random().nextInt((max - min) + 1) + min;
+    }
+
+    public int chooseType() {
+        if(players.size()==0) {
+            return 0;
+        } else {
+            int counts[] = new int[3];
+
+            for(int i=0; i<players.size(); i++) {
+                if(players.get(i).type!=-1) {
+                    counts[players.get(i).type]++;
+                }
+            }
+
+            if(counts[0]<counts[1] && counts[0]<counts[2]) return 0;
+            if(counts[1]<counts[0] && counts[1]<counts[2]) return 1;
+            if(counts[2]<counts[0] && counts[2]<counts[1]) return 2;
+            return rand(0, 2);
+        }
     }
 
     public Player getPlayerByID(int id) {
@@ -95,6 +121,7 @@ public class LD38 {
         kryo.register(Packets.Move.class);
         kryo.register(Packets.Entity.class);
         kryo.register(Packets.RemoveEntity.class);
+        kryo.register(Packets.AddParticles.class);
     }
 
     public static void main(String[] args) {

@@ -2,6 +2,7 @@ package net.sleepystudios.ld38;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import net.sleepystudios.ld38.particles.ParticleBit;
 
 /**
  * Created by Tudor on 23/04/2017.
@@ -31,9 +32,11 @@ public class Receiver extends Listener {
         if(o instanceof Packets.Join) {
             String name = ((Packets.Join) o).name;
             int id = c.getID();
+            int type = ((Packets.Join) o).type;
 
             game.me = id;
             game.players.add(new Player(game, name, id));
+            game.getPlayerByID(id).type = type;
         }
 
         if(o instanceof Packets.Leave) {
@@ -59,6 +62,8 @@ public class Receiver extends Listener {
 
             p.x = m.x;
             p.y = m.y;
+            p.ai = m.ai;
+            if(m.id!=game.me) p.moving = true;
         }
 
         if(o instanceof Packets.Entity) {
@@ -71,10 +76,18 @@ public class Receiver extends Listener {
             Entity e = game.getEntityByID(uuid);
             if(e!=null) e.exists = false;
         }
+
+        if(o instanceof Packets.AddParticles) {
+            Packets.AddParticles ap = ((Packets.AddParticles) o);
+            game.queueParticles = ap.type;
+            game.queuePX = ap.x;
+            game.queuePY = ap.y;
+        }
     }
 
     @Override
     public void disconnected(Connection c) {
         super.disconnected(c);
+        game.me = -1;
     }
 }

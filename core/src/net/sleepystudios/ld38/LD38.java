@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import net.sleepystudios.ld38.particles.ParticleEffect;
+import net.sleepystudios.ld38.particles.Action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,8 +26,11 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
     int me = -1;
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
+    ArrayList<ParticleEffect> particles = new ArrayList<ParticleEffect>();
+    int queueParticles = -1;
+    float queuePX, queuePY;
 
-    final int PLANT = 0, FIRE = 1;
+    final int PLANT = 0, FIRE = 1, WATER = 2;
 	
 	@Override
 	public void create () {
@@ -39,8 +44,22 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         Gdx.input.setInputProcessor(this);
 	}
 
+    // generates a random number
     public static int rand(int min, int max) {
-        return new Random().nextInt((max - min) + 1) + min;
+        return min + (int) (Math.random() * ((max - min) + 1));
+    }
+    public static float rand(float min, float max) {
+        return min + new Random().nextFloat() * (max - min);
+    }
+
+    // random number that cannot be 0
+    public static int randNoZero(int min, int max) {
+        int r = rand(min, max);
+        return r != 0 ? r : randNoZero(min, max);
+    }
+    public static float randNoZero(float min, float max) {
+        float r = rand(min, max);
+        return r != 0 ? r : randNoZero(min, max);
     }
 
 //    public void updateCam(float x, float y) {
@@ -71,7 +90,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
     public Entity getEntityByID(String uuid) {
         for(int i=0; i<entities.size(); i++) {
-            if(entities.get(i).id.equals(uuid)) return entities.get(i);
+            if(entities.get(i)!=null && entities.get(i).id.equals(uuid)) return entities.get(i);
         }
         return null;
     }
@@ -79,17 +98,23 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
     public int getCount(int type) {
         int c = 0;
         for(int i=0; i<entities.size(); i++) {
-            if(entities.get(i)!=null) entities.get(i).type==type) c++;
+            if(entities.get(i)!=null && entities.get(i).type==type) c++;
         }
         return c;
     }
 
 	@Override
 	public void render () {
-        if(me==-1) return;
+        Gdx.gl.glClearColor(72/255f, 49/255f, 40/255f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		Gdx.gl.glClearColor(72/255f, 49/255f, 40/255f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if(me==-1) {
+            batch.begin();
+            font.draw(batch, "Couldn't connect, press 'space' to try again", 10, Gdx.graphics.getHeight()-10);
+            font.draw(batch, "You can also try tweeting @sekaru_ or @sleepystudios to let us know the server is down", 10, Gdx.graphics.getHeight()-30);
+            batch.end();
+            return;
+        }
 
         c.update();
 
@@ -100,7 +125,11 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
         for(int i=0; i<entities.size(); i++) {
             Entity e = entities.get(i);
-            e.render(batch);
+            if(e!=null) e.render(batch);
+        }
+
+        for(int i=0; i<particles.size(); i++) {
+            if(particles.get(i)!=null) particles.get(i).render(batch);
         }
 
         for(int i=0; i<players.size(); i++) {
@@ -112,6 +141,21 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         font.draw(batch, "Pyromaniacs: " + getCount(FIRE), 10, Gdx.graphics.getHeight()-32);
 
 		batch.end();
+
+		if(queueParticles!=-1) {
+            switch(queueParticles) {
+                case 0:
+                    particles.add(new Action(queuePX+8, queuePY, "seed"));
+                    break;
+                case 1:
+                    particles.add(new Action(queuePX+8, queuePY, "fire"));
+                    break;
+                case 2:
+                    particles.add(new Action(queuePX+8, queuePY, "water"));
+                    break;
+            }
+            queueParticles = -1;
+        }
 	}
 	
 	@Override
@@ -130,11 +174,29 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
     @Override
     public boolean keyUp(int keycode) {
-	    if(keycode==Input.Keys.E) {
+	    if(keycode==Input.Keys.E && me!=-1 && getMe().canAction) {
             Packets.Entity e = new Packets.Entity();
             e.x = getMe().x;
             e.y = getMe().y;
             n.client.sendTCP(e);
+
+            switch(getMe().type) {
+                case 0:
+                    particles.add(new Action(getMe().x+8, getMe().y, "seed"));
+                    break;
+                case 1:
+                    particles.add(new Action(getMe().x+8, getMe().y, "fire"));
+                    break;
+                case 2:
+                    particles.add(new Action(getMe().x+8, getMe().y, "water"));
+                    break;
+            }
+
+            getMe().canAction = false;
+        }
+
+        if(keycode==Input.Keys.SPACE && me==-1) {
+            n = new Network(this);
         }
         return false;
     }

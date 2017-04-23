@@ -20,8 +20,9 @@ public class Receiver extends Listener {
     }
 
     public String getRole(Player p) {
-        if(p.type==0) return "planter";
-        return "firestarter";
+        if(p.type==game.PLANT) return "planter";
+        if(p.type==game.FIRE) return "firestarter";
+        return "waterer";
     }
 
     @Override
@@ -29,11 +30,12 @@ public class Receiver extends Listener {
         super.received(c, o);
 
         if(o instanceof Packets.Join) {
-            String name = ((Packets.Join) o).name;
-            c.sendTCP(o);
-
             // add them
-            game.players.add(new Player(name, c.getID()));
+            String name = ((Packets.Join) o).name;
+            game.players.add(new Player(game, name, c.getID()));
+
+            ((Packets.Join) o).type = game.getPlayerByID(c.getID()).type;
+            c.sendTCP(o);
 
             String role = getRole(game.getPlayerByID(c.getID()));
             System.out.println(name + " joined as a " + role + "!");
@@ -67,15 +69,17 @@ public class Receiver extends Listener {
                 ne.y = e.y;
                 ne.scale = e.scale;
                 ne.type = e.type;
-                c.sendTCP(ne);
+                c.sendUDP(ne);
             }
         }
 
         if(o instanceof Packets.Move) {
             Packets.Move m = ((Packets.Move) o);
+            Player p = game.getPlayerByID(c.getID());
+            if(p==null) return;
 
-            game.getPlayerByID(c.getID()).x = m.x;
-            game.getPlayerByID(c.getID()).y = m.y;
+            p.x = m.x;
+            p.y = m.y;
             game.server.sendToAllExceptUDP(c.getID(), o);
         }
 
@@ -86,7 +90,13 @@ public class Receiver extends Listener {
             game.entities.add(new Entity(game, e.x, e.y, type));
             e.id = game.entities.get(game.entities.size()-1).id;
             e.type = game.entities.get(game.entities.size()-1).type;
-            game.server.sendToAllTCP(e);
+            game.server.sendToAllUDP(e);
+
+            Packets.AddParticles ap = new Packets.AddParticles();
+            ap.type = type;
+            ap.x = e.x;
+            ap.y = e.y;
+            game.server.sendToAllExceptUDP(c.getID(), ap);
         }
     }
 

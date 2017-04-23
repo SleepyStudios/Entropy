@@ -5,7 +5,7 @@ package net.sleepystudios.ld38;
  */
 public class Packets {
     public static class Join {
-        String name;
+        String name; int type;
     }
 
     public static class Leave {
@@ -19,7 +19,7 @@ public class Packets {
     }
 
     public static class Move {
-        int id;
+        int id, ai;
         float x, y;
     }
 
@@ -31,5 +31,10 @@ public class Packets {
 
     public static class RemoveEntity {
         String id;
+    }
+
+    public static class AddParticles {
+        int type;
+        float x, y;
     }
 }

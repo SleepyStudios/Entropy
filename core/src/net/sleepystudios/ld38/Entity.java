@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import net.sleepystudios.ld38.particles.Smoke;
 
 /**
  * Created by Tudor on 23/04/2017.
@@ -41,6 +42,9 @@ public class Entity {
                 break;
             case 1:
                 filename = "fire";
+                break;
+            case 2:
+                filename = "water";
         }
 
         anim = new Animation(animSpeed, AnimGenerator.gen(filename + ".png", fw, fh));
@@ -71,6 +75,7 @@ public class Entity {
             } else {
                 scale-=0.1f;
                 if(scale<=0) {
+                    if(type==game.FIRE) game.particles.add(new Smoke(x, y));
                     game.entities.remove(this);
                     return;
                 }

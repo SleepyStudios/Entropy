@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Player {
     private LD38 game;
     String name;
-    int id;
+    int id, type;
     float x = Gdx.graphics.getWidth()/2, y = Gdx.graphics.getHeight()/2;
 
     float animSpeed = 0.1f, animTmr;
@@ -56,26 +56,35 @@ public class Player {
         update();
     }
 
+    float tmrAction;
+    boolean canAction;
     public void update() {
+        moving = false;
+
         if(game.me==id) {
             updateCam();
-            moving = false;
 
             float speed = 150*Gdx.graphics.getDeltaTime();
 
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                move(x, y+speed);
+                if(y+speed<Gdx.graphics.getHeight()-20) move(x, y+speed);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                move(x-speed, y);
+                if(x-speed>2) move(x-speed, y);
                 ai = 1;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                move(x, y-speed);
+                if(y-speed>4) move(x, y-speed);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                move(x+speed, y);
+                if(x+speed<Gdx.graphics.getWidth()-20) move(x+speed, y);
                 ai = 0;
+            }
+
+            if(!canAction) tmrAction+=Gdx.graphics.getDeltaTime();
+            if(tmrAction>=1) {
+                canAction = true;
+                tmrAction = 0;
             }
         }
     }
@@ -112,6 +121,7 @@ public class Player {
 
         Packets.Move m = new Packets.Move();
         m.id = id;
+        m.ai = ai;
         m.x = x;
         m.y = y;
         game.n.client.sendUDP(m);
