@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
  * Created by Tudor on 23/04/2017.
  */
 public class Entity {
+    LD38 game;
     String id;
     float x, y;
     int type;
@@ -20,7 +21,10 @@ public class Entity {
     int fh = 16;
     Animation anim;
 
-    public Entity(String id, float x, float y, float scale, int type) {
+    boolean exists = true;
+
+    public Entity(LD38 game, String id, float x, float y, float scale, int type) {
+        this.game = game;
         this.id = id;
         this.x = x;
         this.y = y;
@@ -61,9 +65,19 @@ public class Entity {
         float delta = Gdx.graphics.getDeltaTime();
 
         tmrScale+=delta;
-        if(tmrScale>=1.0 && scale<1f) {
-            scale+=0.1f;
+        if(tmrScale>=0.5) {
+            if(exists) {
+                scale+=0.1f;
+            } else {
+                scale-=0.1f;
+                if(scale<=0) {
+                    game.entities.remove(this);
+                    return;
+                }
+            }
+
             tmrScale = 0;
         }
+        if(scale>1f) scale=1f;
     }
 }

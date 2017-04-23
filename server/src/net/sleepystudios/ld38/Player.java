@@ -6,7 +6,7 @@ package net.sleepystudios.ld38;
 public class Player {
     String name;
     int id, type;
-    float x = 640/2, y = 320/2;
+    float x = 640/2, y = 480/2;
 
     public Player(String name, int id) {
         this.name = name;

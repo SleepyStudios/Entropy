@@ -38,7 +38,10 @@ public class Receiver extends Listener {
 
         if(o instanceof Packets.Leave) {
             int id = ((Packets.Leave) o).id;
-            game.players.remove(game.getPlayerByID(id));
+            Player p = game.getPlayerByID(id);
+            if(p==null) return;
+
+            game.players.remove(p);
         }
 
         if(o instanceof Packets.NewPlayer) {
@@ -51,19 +54,22 @@ public class Receiver extends Listener {
 
         if(o instanceof Packets.Move) {
             Packets.Move m = ((Packets.Move) o);
+            Player p = game.getPlayerByID(m.id);
+            if(p==null) return;
 
-            game.getPlayerByID(m.id).x = m.x;
-            game.getPlayerByID(m.id).y = m.y;
+            p.x = m.x;
+            p.y = m.y;
         }
 
         if(o instanceof Packets.Entity) {
             Packets.Entity e = ((Packets.Entity) o);
-            game.entities.add(new Entity(e.id, e.x, e.y, e.scale, e.type));
+            game.entities.add(new Entity(game, e.id, e.x, e.y, e.scale, e.type));
         }
 
         if(o instanceof Packets.RemoveEntity) {
             String uuid = ((Packets.RemoveEntity) o).id;
-            game.entities.remove(game.getEntityByID(uuid));
+            Entity e = game.getEntityByID(uuid);
+            if(e!=null) e.exists = false;
         }
     }
 

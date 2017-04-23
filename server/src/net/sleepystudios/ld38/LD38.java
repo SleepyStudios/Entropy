@@ -53,7 +53,7 @@ public class LD38 {
     float tmrScale;
     public void update(float delta) {
         tmrScale+=delta;
-        if(tmrScale>=1) {
+        if(tmrScale>=0.5) {
             for(int i=0; i<entities.size(); i++) {
                 entities.get(i).update();
             }
@@ -73,10 +73,18 @@ public class LD38 {
     }
 
     public Entity getEntityByID(String uuid) {
-        for(int i=0; i<players.size(); i++) {
+        for(int i=0; i<entities.size(); i++) {
             if(entities.get(i).id.equals(uuid)) return entities.get(i);
         }
         return null;
+    }
+
+    public int getPlantCount() {
+        int c = 0;
+        for(int i=0; i<entities.size(); i++) {
+            if(entities.get(i).type==PLANT) c++;
+        }
+        return c;
     }
 
     private void register() {
