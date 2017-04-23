@@ -123,6 +123,7 @@ public class LD38 {
         kryo.register(Packets.Entity.class);
         kryo.register(Packets.RemoveEntity.class);
         kryo.register(Packets.AddParticles.class);
+        kryo.register(Packets.WaterUpdate.class);
     }
 
     public static void main(String[] args) {

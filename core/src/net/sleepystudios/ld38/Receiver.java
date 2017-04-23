@@ -77,6 +77,12 @@ public class Receiver extends Listener {
             game.queuePX = ap.x;
             game.queuePY = ap.y;
         }
+
+        if(o instanceof Packets.WaterUpdate) {
+            Packets.WaterUpdate wu = ((Packets.WaterUpdate) o);
+            Entity e = game.getEntityByID(wu.id);
+            if(e!=null) e.waterLevel = wu.waterLevel;
+        }
     }
 
     @Override

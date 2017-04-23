@@ -36,4 +36,9 @@ public class Packets {
         int type;
         float x, y;
     }
+
+    public static class WaterUpdate {
+        String id;
+        int waterLevel;
+    }
 }

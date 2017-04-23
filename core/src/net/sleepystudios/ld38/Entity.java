@@ -23,6 +23,7 @@ public class Entity {
     Animation anim;
 
     boolean exists = true;
+    int waterLevel = 75;
 
     public Entity(LD38 game, String id, float x, float y, float scale, int type) {
         this.game = game;

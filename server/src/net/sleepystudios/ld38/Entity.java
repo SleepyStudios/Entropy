@@ -55,6 +55,7 @@ public class Entity {
                         if(collides(x, y, other.x, other.y, 12)) {
                             // takeaway water
                             other.waterLevel -= 15;
+                            sendWaterUpdate();
 
                             if(other.waterLevel<=0) {
                                 // destroy the plant
@@ -77,7 +78,7 @@ public class Entity {
 
                     if(other!=this) {
                         if(other.type==game.FIRE) {
-                            if(collides(x-16, y-16, other.x, other.y, 48)) {
+                            if(collides(x-8, y-8, other.x, other.y, 32)) {
                                 // destroy the fire
                                 Packets.RemoveEntity re = new Packets.RemoveEntity();
                                 re.id = other.id;
@@ -88,6 +89,7 @@ public class Entity {
                             if(collides(x-16, y-16, other.x, other.y, 48)) {
                                 // give it water
                                 other.waterLevel+=50;
+                                sendWaterUpdate();
                             }
                         }
                     }
@@ -132,5 +134,12 @@ public class Entity {
             game.server.sendToAllTCP(re);
             game.entities.remove(this);
         }
+    }
+
+    public void sendWaterUpdate() {
+        Packets.WaterUpdate wu = new Packets.WaterUpdate();
+        wu.id = id;
+        wu.waterLevel = waterLevel;
+        game.server.sendToAllTCP(wu);
     }
 }
