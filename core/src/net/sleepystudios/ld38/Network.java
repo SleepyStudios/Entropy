@@ -15,7 +15,7 @@ public class Network {
     public Network(LD38 game) {
         client = new Client(8192, 4096);
         //JOptionPane.showInputDialog(new JFrame(), "Choose a name")
-        client.addListener(new Receiver(game, "x"));
+        client.addListener(new Receiver(game, "player"));
         client.start();
         register();
 

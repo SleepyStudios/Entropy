@@ -76,6 +76,14 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         return null;
     }
 
+    public int getCount(int type) {
+        int c = 0;
+        for(int i=0; i<entities.size(); i++) {
+            if(entities.get(i)!=null) entities.get(i).type==type) c++;
+        }
+        return c;
+    }
+
 	@Override
 	public void render () {
         if(me==-1) return;
@@ -98,8 +106,10 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         for(int i=0; i<players.size(); i++) {
             Player p = players.get(i);
             p.render(batch);
-            font.draw(batch, p.name, p.x, p.y);
         }
+
+        font.draw(batch, "Treehuggers: " + getCount(PLANT), 10, Gdx.graphics.getHeight()-12);
+        font.draw(batch, "Pyromaniacs: " + getCount(FIRE), 10, Gdx.graphics.getHeight()-32);
 
 		batch.end();
 	}
