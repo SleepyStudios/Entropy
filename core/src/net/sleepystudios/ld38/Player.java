@@ -67,8 +67,8 @@ public class Player {
         update();
     }
 
-    float tmrAction;
-    boolean canAction;
+    float tmrAction, tmrShakeScreen;
+    boolean canAction, shakeScreen;
     public void update() {
         moving = false;
 
@@ -97,6 +97,12 @@ public class Player {
                 canAction = true;
                 tmrAction = 0;
             }
+
+            if(shakeScreen) tmrShakeScreen+= Gdx.graphics.getDeltaTime();
+            if(tmrShakeScreen>=0.2) {
+                shakeScreen = false;
+                tmrShakeScreen = 0;
+            }
         }
     }
 
@@ -122,6 +128,14 @@ public class Player {
 
             firstUpdate = true;
         }
+
+        float ox=0, oy=0;
+        if(shakeScreen) {
+            ox = game.rand(2, 4);
+            oy = game.rand(2, 4);
+        }
+
+        game.c.position.set(shownCamX+ox, shownCamY+oy, 0);
     }
 
     private void move(float x, float y) {

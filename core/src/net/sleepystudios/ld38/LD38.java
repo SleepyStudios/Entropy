@@ -193,6 +193,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
             }
 
             getMe().canAction = false;
+            getMe().shakeScreen = true;
         }
 
         if(keycode==Input.Keys.SPACE && me==-1) {
