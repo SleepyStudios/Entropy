@@ -55,7 +55,7 @@ public class Entity {
                         if(collides(x, y, other.x, other.y, 12)) {
                             // takeaway water
                             other.waterLevel -= 15;
-                            sendWaterUpdate();
+                            other.sendWaterUpdate();
 
                             if(other.waterLevel<=0) {
                                 // destroy the plant
@@ -89,7 +89,8 @@ public class Entity {
                             if(collides(x-16, y-16, other.x, other.y, 48)) {
                                 // give it water
                                 other.waterLevel+=50;
-                                sendWaterUpdate();
+                                if(other.waterLevel>100) other.waterLevel=100;
+                                other.sendWaterUpdate();
                             }
                         }
                     }
@@ -121,6 +122,10 @@ public class Entity {
                 ne.scale = 0;
                 ne.type = e.type;
                 game.server.sendToAllTCP(ne);
+
+                // send a water update
+                if(type==game.PLANT) game.getEntityByID(e.id).sendWaterUpdate();
+
                 children++;
             }
         }
@@ -140,6 +145,13 @@ public class Entity {
         Packets.WaterUpdate wu = new Packets.WaterUpdate();
         wu.id = id;
         wu.waterLevel = waterLevel;
-        game.server.sendToAllTCP(wu);
+        game.server.sendToAllUDP(wu);
+    }
+
+    public void sendWaterUpdateTo(int c) {
+        Packets.WaterUpdate wu = new Packets.WaterUpdate();
+        wu.id = id;
+        wu.waterLevel = waterLevel;
+        game.server.sendToUDP(c, wu);
     }
 }

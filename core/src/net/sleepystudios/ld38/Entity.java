@@ -20,7 +20,7 @@ public class Entity {
     float animSpeed = 0.1f, animTmr, scale;
     int fw = 16;
     int fh = 16;
-    Animation anim;
+    Animation anim, anim2;
 
     boolean exists = true;
     int waterLevel = 75;
@@ -49,7 +49,9 @@ public class Entity {
         }
 
         anim = new Animation(animSpeed, AnimGenerator.gen(filename + ".png", fw, fh));
+        if(type==game.PLANT) anim2 = new Animation(animSpeed, AnimGenerator.gen(filename + "_low.png", fw, fh));
         anim.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+        if(type==game.PLANT) anim2.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 
         inited = true;
     }
@@ -60,6 +62,7 @@ public class Entity {
         animTmr += Gdx.graphics.getDeltaTime();
 
         TextureRegion tr = (TextureRegion) anim.getKeyFrame(animTmr, true);
+        if(type==game.PLANT && waterLevel<=50) tr = (TextureRegion) anim2.getKeyFrame(animTmr, true);
         batch.draw(tr, x, y, fw/2, fw/2, fw, fh, scale, scale, 0);
 
         update();

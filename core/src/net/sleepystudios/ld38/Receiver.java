@@ -81,7 +81,9 @@ public class Receiver extends Listener {
         if(o instanceof Packets.WaterUpdate) {
             Packets.WaterUpdate wu = ((Packets.WaterUpdate) o);
             Entity e = game.getEntityByID(wu.id);
-            if(e!=null) e.waterLevel = wu.waterLevel;
+            if(e!=null) {
+                e.waterLevel = wu.waterLevel;
+            }
         }
     }
 
@@ -89,5 +91,6 @@ public class Receiver extends Listener {
     public void disconnected(Connection c) {
         super.disconnected(c);
         game.me = -1;
+        game.c.zoom = 1;
     }
 }

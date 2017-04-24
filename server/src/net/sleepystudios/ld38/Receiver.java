@@ -70,6 +70,8 @@ public class Receiver extends Listener {
                 ne.scale = e.scale;
                 ne.type = e.type;
                 c.sendUDP(ne);
+
+                if(e.type==game.PLANT) e.sendWaterUpdateTo(c.getID());
             }
         }
 

@@ -23,7 +23,7 @@ public class Network {
         register();
 
         try { //35.156.58.36
-            client.connect(10000, "35.156.58.36", 5000, 5001);
+            client.connect(10000, "localhost", 5000, 5001);
         } catch (IOException e) {
             e.printStackTrace();
         }
