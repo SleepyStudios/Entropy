@@ -1,6 +1,7 @@
 package net.sleepystudios.ld38;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -62,8 +63,20 @@ public class Entity {
         animTmr += Gdx.graphics.getDeltaTime();
 
         TextureRegion tr = (TextureRegion) anim.getKeyFrame(animTmr, true);
-        if(type==game.PLANT && waterLevel<=50) tr = (TextureRegion) anim2.getKeyFrame(animTmr, true);
+        //if(type==game.PLANT && waterLevel<=50) tr = (TextureRegion) anim2.getKeyFrame(animTmr, true);
+
+        float r = ((float) waterLevel/40f);
+        float g = ((float) waterLevel/75f);
+        float b = ((float) waterLevel/75f);
+        float min = 0.4f;
+        if(g<min) g = min;
+        if(b<min) b = min;
+
+        Color colour = new Color(r, g, b, 1f);
+
+        batch.setColor(colour);
         batch.draw(tr, x, y, fw/2, fw/2, fw, fh, scale, scale, 0);
+        batch.setColor(new Color(Color.WHITE));
 
         update();
     }

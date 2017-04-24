@@ -100,7 +100,7 @@ public class Player {
                 col = new Color(0.1f, 0.6f, 0.1f, 0.8f);
                 break;
             case 1:
-                col = new Color(1f, 0.2f, 0.2f, 0.8f);
+                col = new Color(0.9f, 0.1f, 0.1f, 0.8f);
                 break;
             case 2:
                 col = new Color(0f, 0.5f, 1f, 0.8f);

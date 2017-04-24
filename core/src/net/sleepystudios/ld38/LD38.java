@@ -4,11 +4,13 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import net.sleepystudios.ld38.particles.ParticleEffect;
 import net.sleepystudios.ld38.particles.Action;
 
@@ -40,6 +42,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
         n = new Network(this);
         c = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        sr = new ShapeRenderer();
 
         Gdx.input.setInputProcessor(this);
 	}
@@ -137,8 +140,14 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
             p.render(batch);
         }
 
-        font.draw(batch, "Treehuggers: " + getCount(PLANT), 10, Gdx.graphics.getHeight()-12);
-        font.draw(batch, "Pyromaniacs: " + getCount(FIRE), 10, Gdx.graphics.getHeight()-32);
+        //font.draw(batch, "Treehuggers: " + getCount(PLANT), 10, Gdx.graphics.getHeight()-12);
+        //font.draw(batch, "Pyromaniacs: " + getCount(FIRE), 10, Gdx.graphics.getHeight()-32);
+
+		batch.end();
+
+		renderBar();
+
+		batch.begin();
 
 		batch.end();
 
@@ -157,6 +166,37 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
             queueParticles = -1;
         }
 	}
+
+    ShapeRenderer sr;
+    public void renderBar() {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_COLOR);
+
+        sr.setProjectionMatrix(c.combined);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+
+        float width = Gdx.graphics.getWidth()-20;
+        float height = 30;
+        float xp = 10;
+        float yp = Gdx.graphics.getHeight()-10-height;
+
+        sr.setColor(new Color(0.1f, 0.1f, 0.1f, 0.5f));
+        sr.rect(xp, yp, width, height);
+
+        float req = 4000f;
+        float perc = getCount(PLANT) / req * width;
+        if(perc>width) perc = width;
+        if(perc<0) perc = 0;
+        float g = 0.4f + (getCount(PLANT) / req);
+        if(g>1f) g = 1f;
+
+        Color col = new Color(0.4f, g, 0.4f,0.8f);
+        sr.setColor(col);
+        sr.rect(xp, yp, perc, height);
+
+        sr.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
 	
 	@Override
 	public void dispose () {
