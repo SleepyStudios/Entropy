@@ -31,7 +31,7 @@ public class Receiver extends Listener {
         if(o instanceof Packets.Join) {
             // make AIs
             if(game.players.size()==0) {
-                for(int i=0; i<3; i++) game.players.add(new Player(game, true));
+                for(int i=0; i<game.botNum; i++) game.players.add(new Player(game, true));
             }
 
             // add them
@@ -119,5 +119,7 @@ public class Receiver extends Listener {
             game.server.sendToAllTCP(l);
             game.players.remove(game.getPlayerByID(c.getID()));
         }
+
+        if(game.players.size()==game.botNum) game.players.clear();
     }
 }

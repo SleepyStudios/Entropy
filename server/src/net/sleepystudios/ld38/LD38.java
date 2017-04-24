@@ -13,6 +13,7 @@ public class LD38 {
     Server server;
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
+    int botNum = 3;
 
     final int PLANT = 0, FIRE = 1, WATER = 2;
 
