@@ -4,6 +4,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -44,6 +46,10 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         c = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sr = new ShapeRenderer();
 
+//        Music music = Gdx.audio.newMusic(Gdx.files.internal("wakeup2.mp3"));
+//        music.setLooping(true);
+//        music.play();
+
         Gdx.input.setInputProcessor(this);
 	}
 
@@ -65,17 +71,10 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         return r != 0 ? r : randNoZero(min, max);
     }
 
-//    public void updateCam(float x, float y) {
-//        int mapPixelWidth = Gdx.graphics.getWidth();
-//        int mapPixelHeight = Gdx.graphics.getHeight();
-//
-//        float minCameraX = c.zoom * (c.viewportWidth / 2);
-//        float maxCameraX = (mapPixelWidth) - minCameraX;
-//        float minCameraY = c.zoom * (c.viewportHeight / 2);
-//        float maxCameraY = (mapPixelHeight) - minCameraY;
-//
-//        c.position.set(Math.min(maxCameraX, Math.max(x, minCameraX)), Math.min(maxCameraY, Math.max(y, minCameraY)), 0);
-//    }
+    public static void playSound(String s) {
+        Sound sound = Gdx.audio.newSound(Gdx.files.internal(s + ".wav"));
+        sound.play(1f);
+    }
 
     public Player getMe() {
 	    for(int i=0; i<players.size(); i++) {
@@ -223,12 +222,15 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
             switch(getMe().type) {
                 case 0:
                     particles.add(new Action(getMe().x+8, getMe().y, "seed"));
+                    playSound("plant");
                     break;
                 case 1:
                     particles.add(new Action(getMe().x+8, getMe().y, "fire"));
+                    playSound("fire");
                     break;
                 case 2:
                     particles.add(new Action(getMe().x+8, getMe().y, "water"));
+                    playSound("water");
                     break;
             }
 
