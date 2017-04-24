@@ -89,16 +89,25 @@ public class Player {
         float xp = x+8-width/2;
         float yp = y-8;
 
-        sr.setColor(new Color(0, 0, 0, 0.4f));
-        sr.rect(xp, yp, width, height);
+        //sr.setColor(new Color(0, 0, 0, 0.4f));
+        //sr.rect(xp, yp, width, height);
 
         float perc = tmrAction / 1f * width;
 
-        float r = type==game.FIRE ? 0.7f : 0;
-        float g = type==game.PLANT ? 0.9f : 0;
-        float b = type==game.WATER ? 0.9f : 0;
+        Color col = new Color(1,1,1,0.8f);
+        switch(type) {
+            case 0:
+                col = new Color(0.1f, 0.6f, 0.1f, 0.8f);
+                break;
+            case 1:
+                col = new Color(1f, 0.2f, 0.2f, 0.8f);
+                break;
+            case 2:
+                col = new Color(0f, 0.5f, 1f, 0.8f);
+                break;
+        }
 
-        sr.setColor(new Color(r, g, b, 0.7f));
+        sr.setColor(col);
         sr.rect(xp, yp, perc, height);
 
         sr.end();
