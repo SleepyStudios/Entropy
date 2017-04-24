@@ -25,7 +25,7 @@ public class Network {
         try { //35.156.58.36
             client.connect(10000, "localhost", 5000, 5001);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Couldn't connect!");
         }
     }
 
