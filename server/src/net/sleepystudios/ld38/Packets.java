@@ -41,4 +41,8 @@ public class Packets {
         String id;
         int waterLevel;
     }
+
+    public static class Attention {
+        float x, y;
+    }
 }

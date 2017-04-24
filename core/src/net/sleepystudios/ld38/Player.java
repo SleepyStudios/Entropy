@@ -59,7 +59,7 @@ public class Player {
         if(!inited) initGraphics();
 
         if(game.me==id) {
-            game.c.position.set(shownCamX+=(camX-shownCamX)*0.08f, shownCamY+=(camY-shownCamY)*0.08f, 0);
+            game.c.position.set(shownCamX+=(camX-shownCamX)*0.08f, shownCamY+=(camY-shownCamY)*0.1f, 0);
         }
 
         animTmr += Gdx.graphics.getDeltaTime();
@@ -110,8 +110,8 @@ public class Player {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    float tmrAction, tmrShakeScreen;
-    boolean canAction=true, shakeScreen;
+    float tmrAction, tmrShakeScreen, tmrAtt;
+    boolean canAction=true, shakeScreen, canAtt;
     public void update() {
         moving = false;
 
@@ -145,6 +145,18 @@ public class Player {
             if(tmrShakeScreen>=0.2) {
                 shakeScreen = false;
                 tmrShakeScreen = 0;
+            }
+
+//            if(game.c.zoom!=1) tmrZoom+= Gdx.graphics.getDeltaTime();
+//            if(tmrZoom>=1.2) {
+//                game.c.zoom = 1;
+//                tmrZoom = 0;
+//            }
+
+            if(!canAtt) tmrAtt+=Gdx.graphics.getDeltaTime();
+            if(tmrAtt>=0.75) {
+                canAtt = true;
+                tmrAtt=0;
             }
         }
     }

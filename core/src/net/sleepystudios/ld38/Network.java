@@ -12,10 +12,12 @@ import java.io.IOException;
 public class Network {
     public Client client;
 
-    public Network(LD38 game) {
+    public Network(LD38 game, String ip) {
         game.players.clear();
         game.entities.clear();
         game.particles.clear();
+        game.actionMessages.clear();
+        game.exclams.clear();
 
         client = new Client(8192, 4096);
         client.addListener(new Receiver(game));
@@ -23,7 +25,7 @@ public class Network {
         register();
 
         try { //35.156.58.36
-            client.connect(10000, "localhost", 5000, 5001);
+            client.connect(10000, ip, 5000, 5001);
         } catch (IOException e) {
             System.out.println("Couldn't connect!");
         }
@@ -39,5 +41,6 @@ public class Network {
         kryo.register(Packets.RemoveEntity.class);
         kryo.register(Packets.AddParticles.class);
         kryo.register(Packets.WaterUpdate.class);
+        kryo.register(Packets.Attention.class);
     }
 }

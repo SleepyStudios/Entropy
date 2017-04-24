@@ -18,6 +18,8 @@ import net.sleepystudios.ld38.particles.Action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -33,6 +35,10 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
     ArrayList<ParticleEffect> particles = new ArrayList<ParticleEffect>();
     int queueParticles = -1;
     float queuePX, queuePY;
+    public static ArrayList<ActionMessage> actionMessages = new ArrayList<ActionMessage>();
+    ArrayList<Exclam> exclams = new ArrayList<Exclam>();
+    float tmrMessages; int messageNum;
+    String ip = "";
 
     final int PLANT = 0, FIRE = 1, WATER = 2;
 	
@@ -42,16 +48,32 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 		img = new Texture("background.bmp");
 		font = new BitmapFont();
 
-        n = new Network(this);
+		try {
+		    readFile();
+        } catch (Exception e) {
+		    e.printStackTrace();
+        }
+
+        n = new Network(this, ip);
         c = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sr = new ShapeRenderer();
 
-        Music music = Gdx.audio.newMusic(Gdx.files.internal("vibrations.mp3"));
-        music.setLooping(true);
-        music.play();
+        //Music music = Gdx.audio.newMusic(Gdx.files.internal("vibrations.mp3"));
+        //music.setLooping(true);
+        //music.play();
 
         Gdx.input.setInputProcessor(this);
 	}
+
+	public void readFile() throws Exception {
+        BufferedReader br = new BufferedReader(new FileReader("data.txt"));
+        try {
+            String line = br.readLine();
+            ip = line;
+        } finally {
+            br.close();
+        }
+    }
 
     // generates a random number
     public static int rand(int min, int max) {
@@ -142,6 +164,14 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         //font.draw(batch, "Treehuggers: " + getCount(PLANT), 10, Gdx.graphics.getHeight()-12);
         //font.draw(batch, "Pyromaniacs: " + getCount(FIRE), 10, Gdx.graphics.getHeight()-32);
 
+        for(int i=0; i<exclams.size(); i++) {
+            exclams.get(i).render(batch);
+        }
+
+        for(int i=0; i<actionMessages.size(); i++) {
+            actionMessages.get(i).render(batch, this);
+        }
+
 		batch.end();
 
 		renderBar();
@@ -164,6 +194,37 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
             }
             queueParticles = -1;
         }
+
+        tmrMessages+=Gdx.graphics.getDeltaTime();
+        int time=3;
+        if(tmrMessages>=time) {
+            if(messageNum<4) messageNum++;
+            tmrMessages = 0;
+        }
+
+        if(messageNum==0) {
+            addActionMessage("Use WASD to Move", Color.WHITE);
+        }
+        if(messageNum==1) {
+            String role = "";
+            switch(getMe().type) {
+                case 0:
+                    role = "plant seeds";
+                    break;
+                case 1:
+                    role = "start fires";
+                    break;
+                case 2:
+                    role = "water plants/put out fires";
+            }
+            addActionMessage("Use Space to " + role, Color.WHITE);
+        }
+        if(messageNum==2) {
+            addActionMessage("Use E to call for attention", Color.WHITE);
+        }
+        if(messageNum==3) {
+            addActionMessage("Win the tug of war", Color.WHITE);
+        }
 	}
 
     ShapeRenderer sr;
@@ -175,7 +236,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
         float width = Gdx.graphics.getWidth()-20;
-        float height = 30;
+        float height = 16;
         float xp = 10;
         float yp = Gdx.graphics.getHeight()-10-height;
 
@@ -202,7 +263,25 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
-	
+
+    public void addActionMessage(String message, Color colour) {
+        // make sure its not like any others
+        for(ActionMessage am : actionMessages) {
+            if(message.equals(am.text)) return;
+        }
+
+        playSound("select");
+
+        int size = 11;
+
+        if(actionMessages.size()>=1) {
+            actionMessages.add(new ActionMessage(message, size, colour));
+            actionMessages.remove(0);
+        } else {
+            actionMessages.add(new ActionMessage(message, size, colour));
+        }
+    }
+
 	@Override
 	public void dispose () {
         batch.dispose();
@@ -219,7 +298,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
     @Override
     public boolean keyUp(int keycode) {
-	    if(keycode==Input.Keys.E && me!=-1 && getMe().canAction) {
+	    if(keycode==Input.Keys.SPACE && me!=-1 && getMe().canAction) {
             Packets.Entity e = new Packets.Entity();
             e.x = getMe().x;
             e.y = getMe().y;
@@ -242,10 +321,23 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
             getMe().canAction = false;
             getMe().shakeScreen = true;
+            //c.zoom = 0.5f;
+        }
+
+        if(keycode==Input.Keys.E && me!=-1) {
+	        if(getMe().canAtt) {
+                exclams.add(new Exclam(getMe().x+8-5, getMe().y));
+                Packets.Attention a = new Packets.Attention();
+                a.x = getMe().x+8-5;
+                a.y = getMe().y;
+                n.client.sendUDP(a);
+                playSound("attention");
+                getMe().canAtt=false;
+            }
         }
 
         if(keycode==Input.Keys.SPACE && me==-1) {
-            n = new Network(this);
+            n = new Network(this, ip);
         }
         return false;
     }
@@ -277,11 +369,6 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
     @Override
     public boolean scrolled(int amount) {
-        if(amount>0) {
-            c.zoom = 1;
-        } else {
-            c.zoom = 0.5f;
-        }
         return false;
     }
 }

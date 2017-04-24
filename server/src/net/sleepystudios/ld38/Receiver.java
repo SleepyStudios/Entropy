@@ -104,6 +104,10 @@ public class Receiver extends Listener {
             ap.y = e.y;
             game.server.sendToAllExceptUDP(c.getID(), ap);
         }
+
+        if(o instanceof Packets.Attention) {
+            game.server.sendToAllExceptUDP(c.getID(), o);
+        }
     }
 
     @Override

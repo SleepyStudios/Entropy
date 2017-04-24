@@ -65,6 +65,7 @@ public class LD38 {
         if(tmrStats>=30) {
             if(players.size()>0) System.out.println("[STATS] " + players.size() + " players online");
             if(entities.size()>0) System.out.println("[STATS] " + entities.size() + " entities");
+
             tmrStats = 0;
         }
 
@@ -129,6 +130,7 @@ public class LD38 {
         kryo.register(Packets.RemoveEntity.class);
         kryo.register(Packets.AddParticles.class);
         kryo.register(Packets.WaterUpdate.class);
+        kryo.register(Packets.Attention.class);
     }
 
     public static void main(String[] args) {

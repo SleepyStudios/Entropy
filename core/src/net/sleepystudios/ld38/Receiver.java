@@ -3,6 +3,8 @@ package net.sleepystudios.ld38;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
+import java.util.Arrays;
+
 /**
  * Created by Tudor on 23/04/2017.
  */
@@ -84,6 +86,12 @@ public class Receiver extends Listener {
             if(e!=null) {
                 e.waterLevel = wu.waterLevel;
             }
+        }
+
+        if(o instanceof Packets.Attention) {
+            Packets.Attention a = ((Packets.Attention) o);
+            game.exclams.add(new Exclam(a.x, a.y));
+            game.playSound("attention");
         }
     }
 

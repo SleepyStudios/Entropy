@@ -12,6 +12,7 @@ public class Entity {
     int type;
     float scale;
     int waterLevel = 75;
+    int maxChildren = 3;
 
     public Entity(LD38 game, float x, float y, int type) {
         this.game = game;
@@ -19,6 +20,7 @@ public class Entity {
         this.x = x;
         this.y = y;
         this.type = type;
+        if(type==game.FIRE) maxChildren = game.rand(1, 3);
     }
 
     public boolean collides(float x1, float y1, float x2, float y2, int s) {
@@ -58,7 +60,7 @@ public class Entity {
                             other.sendWaterUpdate();
                         }
                     } else if(other.type == game.FIRE) {
-                        if (collides(x - 16, y - 16, other.x, other.y, 48) && other.scale>=1.5f) {
+                        if (collides(x - 24, y - 24, other.x, other.y, 64) && other.scale>=1.5f) {
                             // destroy the fire
                             Packets.RemoveEntity re = new Packets.RemoveEntity();
                             re.id = other.id;
@@ -109,7 +111,7 @@ public class Entity {
         }
 
         // spreading
-        if(scale>=2f && canSpread && children<3 && game.getCount(game.PLANT)>0) {
+        if(scale>=2f && canSpread && children<maxChildren && game.getCount(game.PLANT)>0) {
             int offset = 24;
             float nx = x + game.rand(-offset, offset);
             float ny = y + game.rand(-offset, offset);
