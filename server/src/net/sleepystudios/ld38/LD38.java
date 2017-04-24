@@ -66,6 +66,10 @@ public class LD38 {
             if(entities.size()>0) System.out.println("[STATS] " + entities.size() + " entities");
             tmrStats = 0;
         }
+
+        for(int i=0; i<players.size(); i++) {
+            if(players.get(i).ai) players.get(i).update(delta);
+        }
     }
 
     public static int rand(int min, int max) {
@@ -74,7 +78,7 @@ public class LD38 {
 
     public int chooseType() {
         if(players.size()==0) {
-            return 0;
+            return rand(0, 2);
         } else {
             int counts[] = new int[3];
 
@@ -106,10 +110,10 @@ public class LD38 {
         return null;
     }
 
-    public int getPlantCount() {
+    public int getCount(int t) {
         int c = 0;
         for(int i=0; i<entities.size(); i++) {
-            if(entities.get(i).type==PLANT) c++;
+            if(entities.get(i).type==t) c++;
         }
         return c;
     }

@@ -29,6 +29,11 @@ public class Receiver extends Listener {
         super.received(c, o);
 
         if(o instanceof Packets.Join) {
+            // make AIs
+            if(game.players.size()==0) {
+                for(int i=0; i<3; i++) game.players.add(new Player(game, true));
+            }
+
             // add them
             game.players.add(new Player(game, c.getID()));
 

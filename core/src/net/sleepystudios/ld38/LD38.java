@@ -171,7 +171,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_COLOR);
 
-        sr.setProjectionMatrix(c.combined);
+//        sr.setProjectionMatrix(c.combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
         float width = Gdx.graphics.getWidth()-20;
@@ -182,16 +182,22 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         sr.setColor(new Color(0.1f, 0.1f, 0.1f, 0.5f));
         sr.rect(xp, yp, width, height);
 
-        float req = 4000f;
+        float req = getCount(PLANT)+getCount(FIRE);
         float perc = getCount(PLANT) / req * width;
         if(perc>width) perc = width;
         if(perc<0) perc = 0;
-        float g = 0.4f + (getCount(PLANT) / req);
+        float g = 0.6f + (getCount(PLANT) / req);
         if(g>1f) g = 1f;
 
         Color col = new Color(0.4f, g, 0.4f,0.8f);
         sr.setColor(col);
         sr.rect(xp, yp, perc, height);
+
+        float r = 0.6f + (getCount(FIRE) / req);
+        if(r>1f) r = 1f;
+        col = new Color(r, 0.4f, 0.4f, 0.8f);
+        sr.setColor(col);
+        sr.rect(xp+perc, yp, width-perc, height);
 
         sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);

@@ -88,10 +88,6 @@ public class Player {
         float height = 2;
         float xp = x+8-width/2;
         float yp = y-8;
-
-        //sr.setColor(new Color(0, 0, 0, 0.4f));
-        //sr.rect(xp, yp, width, height);
-
         float perc = tmrAction / 1f * width;
 
         Color col = new Color(1,1,1,0.8f);

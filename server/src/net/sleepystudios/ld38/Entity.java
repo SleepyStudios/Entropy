@@ -51,14 +51,14 @@ public class Entity {
 
                 if (other != this) {
                     if (other.type == game.PLANT) {
-                        if (collides(x - 8, y - 8, other.x, other.y, 32)) {
+                        if (collides(x - 16, y - 16, other.x, other.y, 48)) {
                             // give it water
                             other.waterLevel += 30;
                             if (other.waterLevel > 100) other.waterLevel = 100;
                             other.sendWaterUpdate();
                         }
                     } else if(other.type == game.FIRE) {
-                        if (collides(x - 8, y - 8, other.x, other.y, 32) && other.scale>=1.5f) {
+                        if (collides(x - 16, y - 16, other.x, other.y, 48) && other.scale>=1.5f) {
                             // destroy the fire
                             Packets.RemoveEntity re = new Packets.RemoveEntity();
                             re.id = other.id;
@@ -109,7 +109,7 @@ public class Entity {
         }
 
         // spreading
-        if(scale>=2f && canSpread && children<3 && game.getPlantCount()>0) {
+        if(scale>=2f && canSpread && children<3 && game.getCount(game.PLANT)>0) {
             int offset = 24;
             float nx = x + game.rand(-offset, offset);
             float ny = y + game.rand(-offset, offset);
