@@ -2,9 +2,12 @@ package net.sleepystudios.ld38;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * Created by Tudor on 22/04/2017.
@@ -47,6 +50,8 @@ public class Player {
             anim[i].setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         }
 
+        sr = new ShapeRenderer();
+
         inited = true;
     }
 
@@ -64,11 +69,44 @@ public class Player {
         TextureRegion tr = (TextureRegion) anim[ai].getKeyFrame(animTmr, shouldLoop);
         batch.draw(tr, x, y, fw/2, fw/2, fw, fh, 1f, 1f, 0);
 
+        batch.end();
+        if(!canAction) renderBar();
+        batch.begin();
+
         update();
     }
 
+    ShapeRenderer sr;
+    public void renderBar() {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_COLOR);
+
+        sr.setProjectionMatrix(game.c.combined);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+
+        float width = 10;
+        float height = 2;
+        float xp = x+8-width/2;
+        float yp = y-8;
+
+        sr.setColor(new Color(0, 0, 0, 0.4f));
+        sr.rect(xp, yp, width, height);
+
+        float perc = tmrAction / 1f * width;
+
+        float r = type==game.FIRE ? 0.7f : 0;
+        float g = type==game.PLANT ? 0.9f : 0;
+        float b = type==game.WATER ? 0.9f : 0;
+
+        sr.setColor(new Color(r, g, b, 0.7f));
+        sr.rect(xp, yp, perc, height);
+
+        sr.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
     float tmrAction, tmrShakeScreen;
-    boolean canAction, shakeScreen;
+    boolean canAction=true, shakeScreen;
     public void update() {
         moving = false;
 
