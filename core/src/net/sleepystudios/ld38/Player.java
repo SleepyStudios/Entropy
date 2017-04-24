@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import net.sleepystudios.ld38.particles.Action;
 
 /**
  * Created by Tudor on 22/04/2017.
@@ -133,6 +134,32 @@ public class Player {
             if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 if(x+speed<Gdx.graphics.getWidth()-20) move(x+speed, y);
                 ai = 0;
+            }
+
+            if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && canAction) {
+                Packets.Entity e = new Packets.Entity();
+                e.x = x;
+                e.y = y;
+                game.n.client.sendTCP(e);
+
+                switch(type) {
+                    case 0:
+                        game.particles.add(new Action(x+8, y, "seed"));
+                        game.playSound("plant");
+                        break;
+                    case 1:
+                        game.particles.add(new Action(x+8, y, "fire"));
+                        game.playSound("fire");
+                        break;
+                    case 2:
+                        game.particles.add(new Action(x+8, y, "water"));
+                        game.playSound("water");
+                        break;
+                }
+
+                canAction = false;
+                shakeScreen = true;
+                //c.zoom = 0.5f;
             }
 
             if(!canAction) tmrAction+=Gdx.graphics.getDeltaTime();

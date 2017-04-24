@@ -103,7 +103,7 @@ public class Player {
 
     public void handleFireNext(float delta) {
         tmrNextMove+=delta;
-        if(tmrNextMove>=4) {
+        if(tmrNextMove>=3) {
             // find a random plant
             if(game.entities.size()>0 && game.getCount(game.PLANT)>0) {
                 int r = LD38.rand(0, game.entities.size()-1);

@@ -124,6 +124,8 @@ public class Receiver extends Listener {
             game.players.remove(game.getPlayerByID(c.getID()));
         }
 
-        if(game.players.size()==game.botNum) game.players.clear();
+        if(game.players.size()==game.botNum) {
+            game.players.clear();
+        }
     }
 }

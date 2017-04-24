@@ -58,9 +58,10 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         c = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sr = new ShapeRenderer();
 
-        //Music music = Gdx.audio.newMusic(Gdx.files.internal("vibrations.mp3"));
-        //music.setLooping(true);
-        //music.play();
+        Music music = Gdx.audio.newMusic(Gdx.files.internal("vibrations.mp3"));
+        music.setVolume(0.8f);
+        music.setLooping(true);
+        music.play();
 
         Gdx.input.setInputProcessor(this);
 	}
@@ -235,13 +236,10 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         //sr.setProjectionMatrix(c.combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
-        float width = Gdx.graphics.getWidth()-20;
-        float height = 16;
-        float xp = 10;
-        float yp = Gdx.graphics.getHeight()-10-height;
-
-        sr.setColor(new Color(0.1f, 0.1f, 0.1f, 0.5f));
-        sr.rect(xp, yp, width, height);
+        float width = Gdx.graphics.getWidth();
+        float height = 12;
+        float xp = 0;
+        float yp = Gdx.graphics.getHeight()-height;
 
         float req = getCount(PLANT)+getCount(FIRE);
         float perc = getCount(PLANT) / req * width;
@@ -250,13 +248,13 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         float g = 0.6f + (getCount(PLANT) / req);
         if(g>1f) g = 1f;
 
-        Color col = new Color(0.4f, g, 0.4f,0.8f);
+        Color col = new Color(0.3f, g, 0.3f,0.5f);
         sr.setColor(col);
         sr.rect(xp, yp, perc, height);
 
         float r = 0.6f + (getCount(FIRE) / req);
         if(r>1f) r = 1f;
-        col = new Color(r, 0.4f, 0.4f, 0.8f);
+        col = new Color(r, 0.3f, 0.3f, 0.5f);
         sr.setColor(col);
         sr.rect(xp+perc, yp, width-perc, height);
 
@@ -298,32 +296,6 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
     @Override
     public boolean keyUp(int keycode) {
-	    if(keycode==Input.Keys.SPACE && me!=-1 && getMe().canAction) {
-            Packets.Entity e = new Packets.Entity();
-            e.x = getMe().x;
-            e.y = getMe().y;
-            n.client.sendTCP(e);
-
-            switch(getMe().type) {
-                case 0:
-                    particles.add(new Action(getMe().x+8, getMe().y, "seed"));
-                    playSound("plant");
-                    break;
-                case 1:
-                    particles.add(new Action(getMe().x+8, getMe().y, "fire"));
-                    playSound("fire");
-                    break;
-                case 2:
-                    particles.add(new Action(getMe().x+8, getMe().y, "water"));
-                    playSound("water");
-                    break;
-            }
-
-            getMe().canAction = false;
-            getMe().shakeScreen = true;
-            //c.zoom = 0.5f;
-        }
-
         if(keycode==Input.Keys.E && me!=-1) {
 	        if(getMe().canAtt) {
                 exclams.add(new Exclam(getMe().x+8-5, getMe().y));

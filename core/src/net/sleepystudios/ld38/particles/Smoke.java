@@ -12,7 +12,7 @@ public class Smoke extends ParticleEffect {
 
     @Override
     protected void generate() {
-        size = LD38.rand(0, 1);
+        size = LD38.rand(1, 1);
 
         for(int i=0; i<size; i++) {
             bits.add(new SmokeBit("smoke", x, y));

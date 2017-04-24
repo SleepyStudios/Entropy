@@ -41,6 +41,8 @@ public class Entity {
         switch(type) {
             case 0:
                 filename = "plant" + LD38.rand(1, 3);
+                if(LD38.rand(0, 19)==0) filename = "plant4";
+                if(LD38.rand(0, 49)==0) filename = "plant5";
                 break;
             case 1:
                 filename = "fire";
@@ -50,9 +52,7 @@ public class Entity {
         }
 
         anim = new Animation(animSpeed, AnimGenerator.gen(filename + ".png", fw, fh));
-        if(type==game.PLANT) anim2 = new Animation(animSpeed, AnimGenerator.gen(filename + "_low.png", fw, fh));
         anim.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-        if(type==game.PLANT) anim2.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 
         inited = true;
     }
@@ -63,12 +63,12 @@ public class Entity {
         animTmr += Gdx.graphics.getDeltaTime();
 
         TextureRegion tr = (TextureRegion) anim.getKeyFrame(animTmr, true);
-        //if(type==game.PLANT && waterLevel<=50) tr = (TextureRegion) anim2.getKeyFrame(animTmr, true);
 
         float r = ((float) waterLevel/40f);
         float g = ((float) waterLevel/75f);
         float b = ((float) waterLevel/75f);
         float min = 0.4f;
+        if(r<min) r = min;
         if(g<min) g = min;
         if(b<min) b = min;
 
@@ -86,7 +86,9 @@ public class Entity {
         float delta = Gdx.graphics.getDeltaTime();
 
         tmrScale+=delta;
-        if(tmrScale>=0.5) {
+        float speed = 0.5f;
+        if(!exists) speed=0.1f;
+        if(tmrScale>=speed) {
             if(exists) {
                 scale+=0.1f;
             } else {
