@@ -46,9 +46,9 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         c = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sr = new ShapeRenderer();
 
-//        Music music = Gdx.audio.newMusic(Gdx.files.internal("wakeup2.mp3"));
-//        music.setLooping(true);
-//        music.play();
+        Music music = Gdx.audio.newMusic(Gdx.files.internal("vibrations.mp3"));
+        music.setLooping(true);
+        music.play();
 
         Gdx.input.setInputProcessor(this);
 	}
@@ -171,7 +171,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_COLOR);
 
-//        sr.setProjectionMatrix(c.combined);
+        //sr.setProjectionMatrix(c.combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
         float width = Gdx.graphics.getWidth()-20;
