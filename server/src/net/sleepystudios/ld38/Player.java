@@ -103,7 +103,7 @@ public class Player {
 
     public void handleFireNext(float delta) {
         tmrNextMove+=delta;
-        if(tmrNextMove>=2.5) {
+        if(tmrNextMove>=2) {
             // find a random plant
             if(game.entities.size()>0 && game.getCount(game.PLANT)>0) {
                 int r = LD38.rand(0, game.entities.size()-1);
@@ -120,7 +120,7 @@ public class Player {
 
     public void handleWaterNext(float delta) {
         tmrNextMove+=delta;
-        if(tmrNextMove>=1) {
+        if(tmrNextMove>=1.5) {
             // choose between fire and plant
             int t = game.getCount(game.FIRE)>0 ? game.FIRE : game.PLANT;
 
