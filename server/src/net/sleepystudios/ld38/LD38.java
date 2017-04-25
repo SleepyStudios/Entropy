@@ -33,7 +33,7 @@ public class LD38 {
     public void loop() {
         boolean running = true;
 
-        double ns = 1000000000.0 / 60.0;
+        double ns = 1000000000.0 / 30.0;
         float delta = 0;
 
         long lastTime = System.nanoTime();

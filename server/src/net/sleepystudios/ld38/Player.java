@@ -28,10 +28,10 @@ public class Player {
     float tmrNextMove;
     boolean moved;
     public void update(float delta) {
-        float speed = 150*delta;
+        float speed = 220*delta;
 
         if(nextX!=-1 && nextY!=-1) {
-            if ((int) x >= nextX - 1 && (int) x <= nextX + 1) {
+            if ((int) x >= nextX - 2 && (int) x <= nextX + 2) {
                 x = nextX;
                 moved = true;
             } else if (nextX > (int) x) {
@@ -44,7 +44,7 @@ public class Player {
                 dir = 1;
             }
 
-            if ((int) y >= nextY - 1 && (int) y <= nextY + 1) {
+            if ((int) y >= nextY - 2 && (int) y <= nextY + 2) {
                 y = nextY;
                 moved = true;
             } else if (nextY > (int) y) {
@@ -103,7 +103,7 @@ public class Player {
 
     public void handleFireNext(float delta) {
         tmrNextMove+=delta;
-        if(tmrNextMove>=3) {
+        if(tmrNextMove>=2.5) {
             // find a random plant
             if(game.entities.size()>0 && game.getCount(game.PLANT)>0) {
                 int r = LD38.rand(0, game.entities.size()-1);
