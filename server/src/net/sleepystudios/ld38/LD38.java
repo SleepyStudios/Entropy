@@ -3,6 +3,8 @@ package net.sleepystudios.ld38;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Server;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -10,25 +12,39 @@ import java.util.Random;
  * Created by Tudor on 23/04/2017.
  */
 public class LD38 {
+    int tcp, udp;
     Server server;
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
-    int botNum = 3;
+    int botNum;
     int idCount = 0;
 
     final int PLANT = 0, FIRE = 1, WATER = 2;
 
     public LD38() throws Exception {
+        readFile();
+
         server = new Server(8192, 4096);
-        server.bind(5000, 5001);
+        server.bind(tcp, udp);
         server.addListener(new Receiver(this));
         server.start();
         register();
 
-        System.out.println("Server running");
+        System.out.println("Server running on TCP:" + tcp + ", UDP:" + udp + " with " + botNum + " bots");
 
         // main loop
         loop();
+    }
+
+    public void readFile() throws Exception {
+        BufferedReader br = new BufferedReader(new FileReader("server_data.txt"));
+        try {
+            tcp = Integer.valueOf(br.readLine().split(":")[1]);
+            udp = Integer.valueOf(br.readLine().split(":")[1]);
+            botNum = Integer.valueOf(br.readLine().split(":")[1]);
+        } finally {
+            br.close();
+        }
     }
 
     public void loop() {
