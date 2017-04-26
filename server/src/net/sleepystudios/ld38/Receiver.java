@@ -64,19 +64,19 @@ public class Receiver extends Listener {
             }
 
             // send them entities
-            for(int i=0; i<game.entities.size(); i++) {
-                Entity e = game.entities.get(i);
-
-                Packets.Entity ne = new Packets.Entity();
-                ne.id = e.id;
-                ne.x = e.x;
-                ne.y = e.y;
-                ne.scale = e.scale;
-                ne.type = e.type;
-                c.sendUDP(ne);
-
-                if(e.type==game.PLANT) e.sendWaterUpdateTo(c.getID());
-            }
+//            for(int i=0; i<game.entities.size(); i++) {
+//                Entity e = game.entities.get(i);
+//
+//                Packets.Entity ne = new Packets.Entity();
+//                ne.id = e.id;
+//                ne.x = e.x;
+//                ne.y = e.y;
+//                ne.scale = e.scale;
+//                ne.type = e.type;
+//                c.sendUDP(ne);
+//
+//                if(e.type==game.PLANT) e.sendWaterUpdateTo(c.getID());
+//            }
         }
 
         if(o instanceof Packets.Move) {
@@ -103,6 +103,25 @@ public class Receiver extends Listener {
             ap.x = e.x;
             ap.y = e.y;
             game.server.sendToAllExceptUDP(c.getID(), ap);
+        }
+
+        if(o instanceof Packets.RemoveEntity) {
+            c.sendUDP(o);
+        }
+
+        if(o instanceof Packets.WaterUpdate) {
+            Packets.WaterUpdate wu = ((Packets.WaterUpdate) o);
+            Entity e = game.getEntityByID(wu.id);
+            if(e!=null) {
+                Packets.Entity ne = new Packets.Entity();
+                ne.id = e.id;
+                ne.x = e.x;
+                ne.y = e.y;
+                ne.scale = e.scale;
+                ne.type = e.type;
+                c.sendUDP(ne);
+            }
+            c.sendUDP(o);
         }
 
         if(o instanceof Packets.Attention) {

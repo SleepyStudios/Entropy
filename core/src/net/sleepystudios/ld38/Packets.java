@@ -23,13 +23,13 @@ public class Packets {
     }
 
     public static class Entity {
-        String id;
+        int id;
         float x, y, scale;
         int type;
     }
 
     public static class RemoveEntity {
-        String id;
+        int id;
     }
 
     public static class AddParticles {
@@ -38,7 +38,7 @@ public class Packets {
     }
 
     public static class WaterUpdate {
-        String id;
+        int id;
         int waterLevel;
     }
 

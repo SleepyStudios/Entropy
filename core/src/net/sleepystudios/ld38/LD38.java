@@ -113,9 +113,9 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         return null;
     }
 
-    public Entity getEntityByID(String uuid) {
+    public Entity getEntityByID(int id) {
         for(int i=0; i<entities.size(); i++) {
-            if(entities.get(i)!=null && entities.get(i).id.equals(uuid)) return entities.get(i);
+            if(entities.get(i)!=null && entities.get(i).id==id) return entities.get(i);
         }
         return null;
     }

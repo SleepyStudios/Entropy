@@ -3,8 +3,6 @@ package net.sleepystudios.ld38;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import java.util.Arrays;
-
 /**
  * Created by Tudor on 23/04/2017.
  */
@@ -68,9 +66,13 @@ public class Receiver extends Listener {
         }
 
         if(o instanceof Packets.RemoveEntity) {
-            String uuid = ((Packets.RemoveEntity) o).id;
-            Entity e = game.getEntityByID(uuid);
-            if(e!=null) e.exists = false;
+            int id = ((Packets.RemoveEntity) o).id;
+            Entity e = game.getEntityByID(id);
+            if(e!=null) {
+                e.exists = false;
+            } else {
+                game.n.client.sendUDP(o);
+            }
         }
 
         if(o instanceof Packets.AddParticles) {
@@ -85,6 +87,8 @@ public class Receiver extends Listener {
             Entity e = game.getEntityByID(wu.id);
             if(e!=null) {
                 e.waterLevel = wu.waterLevel;
+            } else {
+                game.n.client.sendUDP(o);
             }
         }
 

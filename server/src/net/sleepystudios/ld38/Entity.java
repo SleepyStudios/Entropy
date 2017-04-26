@@ -7,7 +7,7 @@ import java.util.UUID;
  */
 public class Entity {
     LD38 game;
-    String id;
+    int id;
     float x, y;
     int type;
     float scale;
@@ -15,12 +15,14 @@ public class Entity {
     int maxChildren = 3;
 
     public Entity(LD38 game, float x, float y, int type) {
+        game.idCount++;
+
         this.game = game;
-        id = UUID.randomUUID().toString();
+        id = game.idCount;
         this.x = x;
         this.y = y;
         this.type = type;
-        if(type==game.FIRE) maxChildren = game.rand(1, 4);
+        if(type==game.FIRE) maxChildren = game.rand(1, 3);
     }
 
     public boolean collides(float x1, float y1, float x2, float y2, int s) {
@@ -31,7 +33,7 @@ public class Entity {
     public boolean collidesType(float nx, float ny) {
         for(int i=0; i<game.entities.size(); i++) {
             Entity e = game.entities.get(i);
-            if(!e.id.equals(id) && e.type==type) {
+            if(e.id!=id && e.type==type) {
                 if(collides(nx, ny, e.x, e.y, 8)) return true;
             }
         }
@@ -160,12 +162,5 @@ public class Entity {
         wu.id = id;
         wu.waterLevel = waterLevel;
         game.server.sendToAllUDP(wu);
-    }
-
-    public void sendWaterUpdateTo(int c) {
-        Packets.WaterUpdate wu = new Packets.WaterUpdate();
-        wu.id = id;
-        wu.waterLevel = waterLevel;
-        game.server.sendToUDP(c, wu);
     }
 }

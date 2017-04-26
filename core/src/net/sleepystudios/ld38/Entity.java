@@ -14,7 +14,7 @@ import net.sleepystudios.ld38.particles.Smoke;
  */
 public class Entity {
     LD38 game;
-    String id;
+    int id;
     float x, y;
     int type;
 
@@ -26,7 +26,7 @@ public class Entity {
     boolean exists = true;
     int waterLevel = 75;
 
-    public Entity(LD38 game, String id, float x, float y, float scale, int type) {
+    public Entity(LD38 game, int id, float x, float y, float scale, int type) {
         this.game = game;
         this.id = id;
         this.x = x;
@@ -75,7 +75,9 @@ public class Entity {
         Color colour = new Color(r, g, b, 1f);
 
         batch.setColor(colour);
-        batch.draw(tr, x, y, fw/2, fw/2, fw, fh, scale, scale, 0);
+        float sscale = scale;
+        if(sscale>1f) sscale = 1f;
+        batch.draw(tr, x, y, fw/2, fw/2, fw, fh, sscale, sscale, 0);
         batch.setColor(new Color(Color.WHITE));
 
         update();
@@ -91,6 +93,10 @@ public class Entity {
         if(tmrScale>=speed) {
             if(exists) {
                 scale+=0.1f;
+                if(scale>=10f) {
+                    scale = 1f;
+                    exists = false;
+                }
             } else {
                 scale-=0.1f;
                 if(scale<=0) {
@@ -102,6 +108,5 @@ public class Entity {
 
             tmrScale = 0;
         }
-        if(scale>1f) scale=1f;
     }
 }

@@ -14,6 +14,7 @@ public class LD38 {
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
     int botNum = 3;
+    int idCount = 0;
 
     final int PLANT = 0, FIRE = 1, WATER = 2;
 
@@ -105,9 +106,9 @@ public class LD38 {
         return null;
     }
 
-    public Entity getEntityByID(String uuid) {
+    public Entity getEntityByID(int id) {
         for(int i=0; i<entities.size(); i++) {
-            if(entities.get(i).id.equals(uuid)) return entities.get(i);
+            if(entities.get(i)!=null && entities.get(i).id==id) return entities.get(i);
         }
         return null;
     }
