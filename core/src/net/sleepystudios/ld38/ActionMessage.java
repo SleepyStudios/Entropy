@@ -11,17 +11,11 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
  * Created by Tudor on 24/04/2017.
  */
 public class ActionMessage {
-    public static final int DEFAULT_SIZE = 18;
-
     public String text;
     private int size;
     private Color colour;
     private float y = -1, tmrLife;
     private BitmapFont font;
-
-    public ActionMessage(String text) {
-        this(text, DEFAULT_SIZE, Color.WHITE);
-    }
 
     public ActionMessage(String text, int size, Color colour) {
         this.text = text;
@@ -50,14 +44,11 @@ public class ActionMessage {
     public void render(SpriteBatch batch, LD38 game) {
         checkFont();
 
-        boolean winMsg = text.toLowerCase().contains("again");
-
         int index = LD38.actionMessages.indexOf(this);
         float tar = game.getMe().y + 40 + (index*20);
-        if(winMsg) tar = Gdx.graphics.getHeight()/2 + (index*30);
 
         y+=(tar-y)*0.2f;
-        if(!winMsg) tmrLife+=Gdx.graphics.getDeltaTime();
+        tmrLife+=Gdx.graphics.getDeltaTime();
 
         if(tmrLife>=3) {
             if(font.getColor().a-0.1f>0) {

@@ -21,7 +21,7 @@ public class Entity {
     float animSpeed = 0.1f, animTmr, scale;
     int fw = 16;
     int fh = 16;
-    Animation anim, anim2;
+    Animation anim;
 
     boolean exists = true;
     int waterLevel = 75;
@@ -35,7 +35,7 @@ public class Entity {
         this.type = type;
     }
 
-    boolean inited;
+    private boolean inited;
     public void initGraphics() {
         String filename = "";
         switch(type) {
@@ -67,6 +67,7 @@ public class Entity {
         float r = ((float) waterLevel/40f);
         float g = ((float) waterLevel/75f);
         float b = ((float) waterLevel/75f);
+
         float min = 0.4f;
         if(r<min) r = min;
         if(g<min) g = min;
@@ -75,9 +76,9 @@ public class Entity {
         Color colour = new Color(r, g, b, 1f);
 
         batch.setColor(colour);
-        float sscale = scale;
-        if(sscale>1f) sscale = 1f;
-        batch.draw(tr, x, y, fw/2, fw/2, fw, fh, sscale, sscale, 0);
+        float shownScale = scale;
+        if(shownScale>1f) shownScale = 1f;
+        batch.draw(tr, x, y, fw/2, fw/2, fw, fh, shownScale, shownScale, 0);
         batch.setColor(new Color(Color.WHITE));
 
         update();
@@ -89,7 +90,7 @@ public class Entity {
 
         tmrScale+=delta;
         float speed = 0.5f;
-        if(!exists) speed=0.1f;
+        if(!exists) speed = 0.1f;
         if(tmrScale>=speed) {
             if(exists) {
                 scale+=0.1f;

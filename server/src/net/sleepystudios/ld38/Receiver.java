@@ -62,21 +62,6 @@ public class Receiver extends Listener {
                     c.sendTCP(np);
                 }
             }
-
-            // send them entities
-//            for(int i=0; i<game.entities.size(); i++) {
-//                Entity e = game.entities.get(i);
-//
-//                Packets.Entity ne = new Packets.Entity();
-//                ne.id = e.id;
-//                ne.x = e.x;
-//                ne.y = e.y;
-//                ne.scale = e.scale;
-//                ne.type = e.type;
-//                c.sendUDP(ne);
-//
-//                if(e.type==game.PLANT) e.sendWaterUpdateTo(c.getID());
-//            }
         }
 
         if(o instanceof Packets.Move) {

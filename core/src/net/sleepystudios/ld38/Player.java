@@ -159,7 +159,6 @@ public class Player {
 
                 canAction = false;
                 shakeScreen = true;
-                //c.zoom = 0.5f;
             }
 
             if(!canAction) tmrAction+=Gdx.graphics.getDeltaTime();
@@ -173,12 +172,6 @@ public class Player {
                 shakeScreen = false;
                 tmrShakeScreen = 0;
             }
-
-//            if(game.c.zoom!=1) tmrZoom+= Gdx.graphics.getDeltaTime();
-//            if(tmrZoom>=1.2) {
-//                game.c.zoom = 1;
-//                tmrZoom = 0;
-//            }
 
             if(!canAtt) tmrAtt+=Gdx.graphics.getDeltaTime();
             if(tmrAtt>=0.75) {

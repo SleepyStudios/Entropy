@@ -67,7 +67,6 @@ public class LD38 {
         }
     }
 
-
     float tmrScale, tmrStats;
     public void update(float delta) {
         tmrScale+=delta;
@@ -80,8 +79,10 @@ public class LD38 {
 
         tmrStats+=delta;
         if(tmrStats>=30) {
-            if(players.size()>0) System.out.println("[STATS] " + players.size() + " players online");
-            if(entities.size()>0) System.out.println("[STATS] " + entities.size() + " entities");
+            if(players.size()>0) {
+                System.out.println("[STATS] " + players.size() + " players online");
+                if(entities.size()>0) System.out.println("[STATS] " + entities.size() + " entities");
+            }
 
             tmrStats = 0;
         }

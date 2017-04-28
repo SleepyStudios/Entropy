@@ -17,11 +17,11 @@ public class Exclam {
         tar = y+25;
     }
 
-    boolean inited;
+    private boolean inited;
     public void initGraphics() {
         e = new Sprite(new Texture("exclam.png"));
         e.setPosition(x, y);
-        inited=true;
+        inited = true;
     }
 
     public void render(SpriteBatch batch) {

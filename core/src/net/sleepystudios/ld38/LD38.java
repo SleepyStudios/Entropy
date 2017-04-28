@@ -34,11 +34,14 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
     Network n;
     OrthographicCamera c;
     int me = -1;
+
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
     ArrayList<ParticleEffect> particles = new ArrayList<ParticleEffect>();
+
     int queueParticles = -1;
     float queuePX, queuePY;
+
     public static ArrayList<ActionMessage> actionMessages = new ArrayList<ActionMessage>();
     ArrayList<Exclam> exclams = new ArrayList<Exclam>();
     float tmrMessages; int messageNum;
@@ -79,6 +82,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
             } else {
                 ip = line.split(":")[1];
             }
+            System.out.println(ip);
         } finally {
             br.close();
         }
@@ -92,7 +96,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         // get the response
         BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
 
-        return rd.readLine().split(":")[1];
+        return rd.readLine();
     }
 
     // generates a random number
@@ -181,9 +185,6 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
             p.render(batch);
         }
 
-        //font.draw(batch, "Treehuggers: " + getCount(PLANT), 10, Gdx.graphics.getHeight()-12);
-        //font.draw(batch, "Pyromaniacs: " + getCount(FIRE), 10, Gdx.graphics.getHeight()-32);
-
         for(int i=0; i<exclams.size(); i++) {
             exclams.get(i).render(batch);
         }
@@ -252,7 +253,6 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_COLOR);
 
-        //sr.setProjectionMatrix(c.combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
         float width = Gdx.graphics.getWidth();

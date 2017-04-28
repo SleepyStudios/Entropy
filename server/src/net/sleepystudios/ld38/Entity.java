@@ -46,6 +46,7 @@ public class Entity {
         float fireSpread = 0.8f;
 
         if(type==game.PLANT && scale>=1f) {
+            if (waterLevel >= 50) canSpread = true;
             if(game.rand(0, 9)==0) waterLevel-=2;
             sendWaterUpdate();
         }
@@ -79,13 +80,6 @@ public class Entity {
             re.id = id;
             game.server.sendToAllTCP(re);
             game.entities.remove(this);
-        }
-
-        if(scale>=1f) {
-            // plant
-            if (type == game.PLANT) {
-                if (waterLevel >= 50) canSpread = true;
-            }
         }
 
         if(scale>=fireSpread) {

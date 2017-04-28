@@ -24,7 +24,7 @@ public class Network {
         client.start();
         register();
 
-        try { //35.156.58.36
+        try {
             client.connect(10000, ip, 5000, 5001);
         } catch (IOException e) {
             System.out.println("Couldn't connect!");
