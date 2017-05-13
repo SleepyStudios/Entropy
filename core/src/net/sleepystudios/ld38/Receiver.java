@@ -78,7 +78,7 @@ public class Receiver extends Listener {
         if(o instanceof Packets.AddParticles) {
             Packets.AddParticles ap = ((Packets.AddParticles) o);
             game.queueParticles = ap.type;
-            game.queuePX = ap.x;
+            game.queuePX = ap.x+8;
             game.queuePY = ap.y;
         }
 
@@ -103,6 +103,5 @@ public class Receiver extends Listener {
     public void disconnected(Connection c) {
         super.disconnected(c);
         game.me = -1;
-        game.c.zoom = 1;
     }
 }

@@ -8,8 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Entropy";
-		config.width = 640;
-		config.height = 480;
+		config.width = LD38.SCREEN_W;
+		config.height = LD38.SCREEN_H;
 		config.resizable = false;
 
 		new LwjglApplication(new LD38(), config);

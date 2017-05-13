@@ -39,15 +39,15 @@ public class Entity {
     public void initGraphics() {
         String filename = "";
         switch(type) {
-            case 0:
+            case LD38.PLANT:
                 filename = "plant" + LD38.rand(1, 3);
                 if(LD38.rand(0, 19)==0) filename = "plant4";
                 if(LD38.rand(0, 49)==0) filename = "plant5";
                 break;
-            case 1:
+            case LD38.FIRE:
                 filename = "fire";
                 break;
-            case 2:
+            case LD38.WATER:
                 filename = "water";
         }
 
@@ -61,7 +61,6 @@ public class Entity {
         if(!inited) initGraphics();
 
         animTmr += Gdx.graphics.getDeltaTime();
-
         TextureRegion tr = (TextureRegion) anim.getKeyFrame(animTmr, true);
 
         float r = ((float) waterLevel/40f);
@@ -101,7 +100,7 @@ public class Entity {
             } else {
                 scale-=0.1f;
                 if(scale<=0) {
-                    if(type==game.FIRE) game.particles.add(new Smoke(x, y));
+                    if(type==LD38.FIRE) game.particles.add(new Smoke(x, y));
                     game.entities.remove(this);
                     return;
                 }

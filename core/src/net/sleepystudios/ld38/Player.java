@@ -23,6 +23,8 @@ public class Player {
     int fh = 16;
     Animation anim[] = new Animation[2];
 
+    ShapeRenderer sr;
+
     boolean moving;
     int ai;
 
@@ -36,13 +38,13 @@ public class Player {
     public void initGraphics() {
         String filename = "";
         switch(type) {
-            case 0:
+            case LD38.PLANT:
                 filename = "planter";
                 break;
-            case 1:
+            case LD38.FIRE:
                 filename = "firestarter";
                 break;
-            case 2:
+            case LD38.WATER:
                 filename = "waterer";
         }
 
@@ -60,7 +62,7 @@ public class Player {
         if(!inited) initGraphics();
 
         if(game.me==id) {
-            game.c.position.set(shownCamX+=(camX-shownCamX)*0.08f, shownCamY+=(camY-shownCamY)*0.1f, 0);
+            game.cam.position.set(shownCamX+=(camX-shownCamX)*0.08f, shownCamY+=(camY-shownCamY)*0.1f, 0);
         }
 
         animTmr += Gdx.graphics.getDeltaTime();
@@ -77,12 +79,11 @@ public class Player {
         update();
     }
 
-    ShapeRenderer sr;
     public void renderBar() {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_COLOR);
 
-        sr.setProjectionMatrix(game.c.combined);
+        sr.setProjectionMatrix(game.cam.combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
         float width = 10;
@@ -122,7 +123,7 @@ public class Player {
             float speed = 150*Gdx.graphics.getDeltaTime();
 
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                if(y+speed<Gdx.graphics.getHeight()-20) move(x, y+speed);
+                if(y+speed<LD38.SCREEN_H-20) move(x, y+speed);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 if(x-speed>2) move(x-speed, y);
@@ -132,7 +133,7 @@ public class Player {
                 if(y-speed>4) move(x, y-speed);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                if(x+speed<Gdx.graphics.getWidth()-20) move(x+speed, y);
+                if(x+speed<LD38.SCREEN_W-20) move(x+speed, y);
                 ai = 0;
             }
 
@@ -185,12 +186,12 @@ public class Player {
     boolean firstUpdate;
     public void updateCam() {
         // get the map properties to find the height/width, etc
-        int w = Gdx.graphics.getWidth();
-        int h = Gdx.graphics.getHeight();
+        int w = LD38.SCREEN_W;
+        int h = LD38.SCREEN_H;
 
-        float minX = game.c.zoom * (game.c.viewportWidth / 2);
+        float minX = game.cam.zoom * (game.cam.viewportWidth / 2);
         float maxX = (w) - minX;
-        float minY = game.c.zoom * (game.c.viewportHeight / 2);
+        float minY = game.cam.zoom * (game.cam.viewportHeight / 2);
         float maxY = (h) - minY;
 
         camX = Math.min(maxX, Math.max(x, minX));
@@ -199,7 +200,7 @@ public class Player {
         if(!firstUpdate) {
             shownCamX = camX;
             shownCamY = camY;
-            game.c.position.set(shownCamX, shownCamY, 0);
+            game.cam.position.set(shownCamX, shownCamY, 0);
 
             firstUpdate = true;
         }
@@ -210,7 +211,7 @@ public class Player {
             oy = game.rand(2, 4);
         }
 
-        game.c.position.set(shownCamX+ox, shownCamY+oy, 0);
+        game.cam.position.set(shownCamX+ox, shownCamY+oy, 0);
     }
 
     private void move(float x, float y) {

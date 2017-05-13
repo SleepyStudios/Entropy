@@ -1,7 +1,5 @@
 package net.sleepystudios.ld38;
 
-import java.util.UUID;
-
 /**
  * Created by Tudor on 23/04/2017.
  */
@@ -22,6 +20,7 @@ public class Entity {
         this.x = x;
         this.y = y;
         this.type = type;
+
         if(type==game.FIRE) maxChildren = game.rand(1, 3);
     }
 
@@ -33,86 +32,31 @@ public class Entity {
     public boolean collidesType(float nx, float ny) {
         for(int i=0; i<game.entities.size(); i++) {
             Entity e = game.entities.get(i);
-            if(e.id!=id && e.type==type) {
-                if(collides(nx, ny, e.x, e.y, 8)) return true;
-            }
+            if(e.id!=id && e.type==type) if(collides(nx, ny, e.x, e.y, 8)) return true;
         }
         return false;
     }
 
     int children; boolean canSpread;
+    float spread[] = {2f, 0.8f, 2f};
+    float maxScale[] = {10f, 2f, 1f};
+    float extinguishThresh = 0.5f;
     public void update() {
         scale+=0.1f;
-        float fireSpread = 0.8f;
 
-        if(type==game.PLANT && scale>=1f) {
-            if (waterLevel >= 50) canSpread = true;
-            if(game.rand(0, 9)==0) waterLevel-=2;
-            sendWaterUpdate();
-        }
-
-        if(type==game.WATER) {
-            for (int i = 0; i < game.entities.size(); i++) {
-                Entity other = game.entities.get(i);
-
-                if (other != this) {
-                    if (other.type == game.PLANT) {
-                        if (collides(x - 16, y - 16, other.x, other.y, 48)) {
-                            // give it water
-                            other.waterLevel += 30;
-                            if (other.waterLevel > 100) other.waterLevel = 100;
-                            other.sendWaterUpdate();
-                        }
-                    } else if(other.type == game.FIRE) {
-                        if (collides(x - 16, y - 16, other.x, other.y, 48) && other.scale>=0.5f) {
-                            // destroy the fire
-                            Packets.RemoveEntity re = new Packets.RemoveEntity();
-                            re.id = other.id;
-                            game.server.sendToAllTCP(re);
-                            game.entities.remove(other);
-                        }
-                    }
-                }
-            }
-
-            // destroy this too
-            Packets.RemoveEntity re = new Packets.RemoveEntity();
-            re.id = id;
-            game.server.sendToAllTCP(re);
-            game.entities.remove(this);
-        }
-
-        if(scale>=fireSpread) {
-            // fire
-            if(type==game.FIRE) {
-                for(int i=0; i<game.entities.size(); i++) {
-                    Entity other = game.entities.get(i);
-
-                    if(other!=null && other!=this && other.type==game.PLANT) {
-                        if(collides(x, y, other.x, other.y, 12)) {
-                            // takeaway water
-                            other.waterLevel -= 2;
-                            other.sendWaterUpdate();
-
-                            if(other.waterLevel<=0) {
-                                // destroy the plant
-                                Packets.RemoveEntity re = new Packets.RemoveEntity();
-                                re.id = other.id;
-                                game.server.sendToAllTCP(re);
-                                game.entities.remove(other);
-                            }
-
-                            canSpread = true;
-                        }
-                    }
-                }
-            }
+        switch(type) {
+            case LD38.PLANT:
+                updatePlant();
+                break;
+            case LD38.FIRE:
+                updateFire();
+                break;
+            case LD38.WATER:
+                updateWater();
         }
 
         // spreading
-        float spread = 2f;
-        if(type==game.FIRE) spread = fireSpread;
-        if(scale>=spread && canSpread && children<maxChildren && game.getCount(game.PLANT)>0) {
+        if(scale>=spread[type] && canSpread && children<maxChildren && game.getCount(game.PLANT)>0) {
             int offset = 24;
             float nx = x + game.rand(-offset, offset);
             float ny = y + game.rand(-offset, offset);
@@ -137,18 +81,79 @@ public class Entity {
             }
         }
 
-        float maxScale = 0;
-        if(type==game.PLANT) {
-            if(waterLevel>5) maxScale = 10f;
-        }
-        if(type==game.FIRE) maxScale = 5f;
-        if(scale>=maxScale) {
+        if(scale>=maxScale[type]) {
             // kill it off
             Packets.RemoveEntity re = new Packets.RemoveEntity();
             re.id = id;
-            game.server.sendToAllTCP(re);
+            game.server.sendToAllUDP(re);
             game.entities.remove(this);
         }
+    }
+
+    private void updatePlant() {
+        if(scale>=1f) {
+            if (waterLevel >= 50) canSpread = true;
+            if(game.rand(0, 9)==0) waterLevel-=2;
+            sendWaterUpdate();
+        }
+    }
+
+    private void updateFire() {
+        // check if they can start burning any plants
+        if(scale>=spread[LD38.FIRE]) {
+            for(int i=0; i<game.entities.size(); i++) {
+                Entity other = game.entities.get(i);
+
+                if(other!=null && other!=this && other.type==game.PLANT) {
+                    if(collides(x, y, other.x, other.y, 12)) {
+                        // takeaway water
+                        other.waterLevel -= 2;
+                        other.sendWaterUpdate();
+
+                        if(other.waterLevel<=0) {
+                            // destroy the plant
+                            Packets.RemoveEntity re = new Packets.RemoveEntity();
+                            re.id = other.id;
+                            game.server.sendToAllUDP(re);
+                            game.entities.remove(other);
+                        }
+
+                        canSpread = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateWater() {
+        for (int i = 0; i < game.entities.size(); i++) {
+            Entity other = game.entities.get(i);
+
+            if (other != this) {
+                if (other.type == LD38.PLANT) {
+                    if (collides(x - 16, y - 16, other.x, other.y, 48)) {
+                        // give it water
+                        other.waterLevel += 30;
+                        if (other.waterLevel > 100) other.waterLevel = 100;
+                        other.sendWaterUpdate();
+                    }
+                } else if(other.type == LD38.FIRE) {
+                    if (collides(x - 16, y - 16, other.x, other.y, 48) && other.scale>=extinguishThresh) {
+                        // destroy the fire
+                        Packets.RemoveEntity re = new Packets.RemoveEntity();
+                        re.id = other.id;
+                        game.server.sendToAllUDP(re);
+                        game.entities.remove(other);
+                    }
+                }
+            }
+        }
+
+        // destroy this too
+        Packets.RemoveEntity re = new Packets.RemoveEntity();
+        re.id = id;
+        game.server.sendToAllUDP(re);
+        game.entities.remove(this);
     }
 
     public void sendWaterUpdate() {

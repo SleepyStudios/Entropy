@@ -14,15 +14,17 @@ import java.util.Random;
 public class LD38 {
     int tcp, udp;
     Server server;
+
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
-    int botNum;
-    int idCount = 0;
 
-    final int PLANT = 0, FIRE = 1, WATER = 2;
+    int botNum, idCount;
+
+    public static final int PLANT = 0, FIRE = 1, WATER = 2;
+    public static final int SCREEN_W = 640, SCREEN_H = 480;
 
     public LD38() throws Exception {
-        readFile();
+        readConfig();
 
         server = new Server(8192, 4096);
         server.bind(tcp, udp);
@@ -36,7 +38,7 @@ public class LD38 {
         loop();
     }
 
-    public void readFile() throws Exception {
+    public void readConfig() throws Exception {
         BufferedReader br = new BufferedReader(new FileReader("server_data.txt"));
         try {
             tcp = Integer.valueOf(br.readLine().split(":")[1]);
@@ -98,7 +100,7 @@ public class LD38 {
 
     public int chooseType() {
         if(players.size()==0) {
-            return rand(0, 2);
+            return rand(PLANT, WATER);
         } else {
             int counts[] = new int[3];
 
@@ -108,11 +110,14 @@ public class LD38 {
                 }
             }
 
-            if(counts[0]==0) return 0;
-            if(counts[0]<counts[1] && counts[0]<counts[2]) return 0;
-            if(counts[1]<counts[0] && counts[1]<counts[2]) return 1;
-            if(counts[2]<counts[0] && counts[2]<counts[1]) return 2;
-            return rand(0, 2);
+            if(counts[PLANT]==0) return PLANT;
+            if(counts[FIRE]==0) return FIRE;
+            if(counts[WATER]==0) return WATER;
+
+            if(counts[PLANT]<counts[FIRE] && counts[PLANT]<counts[WATER]) return PLANT;
+            if(counts[FIRE]<counts[PLANT] && counts[FIRE]<counts[WATER]) return FIRE;
+            if(counts[WATER]<counts[PLANT] && counts[WATER]<counts[FIRE]) return WATER;
+            return rand(PLANT, WATER);
         }
     }
 
