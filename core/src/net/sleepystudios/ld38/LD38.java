@@ -32,8 +32,8 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 	Texture img;
     BitmapFont font;
     Network n;
-    OrthographicCamera c;
-    int me = -1;
+    OrthographicCamera cam;
+    ShapeRenderer sr;
 
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
@@ -42,12 +42,14 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
     int queueParticles = -1;
     float queuePX, queuePY;
 
-    public static ArrayList<ActionMessage> actionMessages = new ArrayList<ActionMessage>();
+    ArrayList<ActionMessage> actionMessages = new ArrayList<ActionMessage>();
     ArrayList<Exclam> exclams = new ArrayList<Exclam>();
     float tmrMessages; int messageNum;
     String ip = ""; int tcp = 5000, udp = 5001;
 
-    final int PLANT = 0, FIRE = 1, WATER = 2;
+    public static final int PLANT = 0, FIRE = 1, WATER = 2;
+    public static final int SCREEN_W = 640, SCREEN_H = 480;
+    int me = -1;
 	
 	@Override
 	public void create () {
@@ -56,13 +58,13 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 		font = new BitmapFont();
 
 		try {
-		    readFile();
+		    readConfig();
         } catch (Exception e) {
 		    e.printStackTrace();
         }
 
         n = new Network(this, ip, tcp, udp);
-        c = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sr = new ShapeRenderer();
 
         Music music = Gdx.audio.newMusic(Gdx.files.internal("vibrations.mp3"));
@@ -73,7 +75,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         Gdx.input.setInputProcessor(this);
 	}
 
-	public void readFile() throws Exception {
+	public void readConfig() throws Exception {
         BufferedReader br = new BufferedReader(new FileReader("config.dat"));
         try {
             String line;
@@ -111,7 +113,6 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
         // get the response
         BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
-
         return rd.readLine();
     }
 
@@ -124,15 +125,12 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
     }
 
     // random number that cannot be 0
-    public static int randNoZero(int min, int max) {
-        int r = rand(min, max);
-        return r != 0 ? r : randNoZero(min, max);
-    }
     public static float randNoZero(float min, float max) {
         float r = rand(min, max);
         return r != 0 ? r : randNoZero(min, max);
     }
 
+    // sound
     public static void playSound(String s) {
         Sound sound = Gdx.audio.newSound(Gdx.files.internal(s + ".wav"));
         sound.play(1f);
@@ -160,11 +158,11 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
     }
 
     public int getCount(int type) {
-        int c = 0;
+        int count = 0;
         for(int i=0; i<entities.size(); i++) {
-            if(entities.get(i)!=null && entities.get(i).type==type) c++;
+            if(entities.get(i)!=null && entities.get(i).type==type) count++;
         }
-        return c;
+        return count;
     }
 
 	@Override
@@ -180,9 +178,9 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
             return;
         }
 
-        c.update();
+        cam.update();
 
-        batch.setProjectionMatrix(c.combined);
+        batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 
 		batch.draw(img, 0, 0);
@@ -211,75 +209,67 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
 		batch.end();
 
+        // tug of war bar
 		renderBar();
-
-		batch.begin();
-
-		batch.end();
 
 		if(queueParticles!=-1) {
             switch(queueParticles) {
-                case 0:
-                    particles.add(new Action(queuePX+8, queuePY, "seed"));
+                case PLANT:
+                    particles.add(new Action(queuePX, queuePY, "seed"));
                     break;
-                case 1:
-                    particles.add(new Action(queuePX+8, queuePY, "fire"));
+                case FIRE:
+                    particles.add(new Action(queuePX, queuePY, "fire"));
                     break;
-                case 2:
-                    particles.add(new Action(queuePX+8, queuePY, "water"));
+                case WATER:
+                    particles.add(new Action(queuePX, queuePY, "water"));
                     break;
             }
             queueParticles = -1;
         }
 
         tmrMessages+=Gdx.graphics.getDeltaTime();
-        int time=3;
-        if(tmrMessages>=time) {
+        int msgDelay = 3;
+        if(tmrMessages>=msgDelay) {
             if(messageNum<4) messageNum++;
             tmrMessages = 0;
         }
 
-        if(messageNum==0) {
-            addActionMessage("Use WASD to Move", Color.WHITE);
-        }
+        if(messageNum==0) addActionMessage("Use 'WASD' to Move", Color.WHITE);
         if(messageNum==1) {
             String role = "";
             switch(getMe().type) {
-                case 0:
+                case PLANT:
                     role = "plant seeds";
                     break;
-                case 1:
+                case FIRE:
                     role = "start fires";
                     break;
-                case 2:
+                case WATER:
                     role = "water plants/put out fires";
             }
-            addActionMessage("Use Space to " + role, Color.WHITE);
+            addActionMessage("Use 'Space' to " + role, Color.WHITE);
         }
-        if(messageNum==2) {
-            addActionMessage("Use E to call for attention", Color.WHITE);
-        }
-        if(messageNum==3) {
-            addActionMessage("Win the tug of war", Color.WHITE);
-        }
+        if(messageNum==2) addActionMessage("Use 'E' to call for attention", Color.WHITE);
+        if(messageNum==3) addActionMessage("Win the tug of war", Color.WHITE);
 	}
 
-    ShapeRenderer sr;
     public void renderBar() {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_COLOR);
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
-        float width = Gdx.graphics.getWidth();
+        float width = SCREEN_W;
         float height = 12;
         float xp = 0;
-        float yp = Gdx.graphics.getHeight()-height;
+        float yp = SCREEN_H-height;
 
         float req = getCount(PLANT)+getCount(FIRE);
         float perc = getCount(PLANT) / req * width;
+
         if(perc>width) perc = width;
         if(perc<0) perc = 0;
+
         float g = 0.6f + (getCount(PLANT) / req);
         if(g>1f) g = 1f;
 
@@ -306,7 +296,6 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         playSound("select");
 
         int size = 11;
-
         if(actionMessages.size()>=1) {
             actionMessages.add(new ActionMessage(message, size, colour));
             actionMessages.remove(0);
@@ -331,11 +320,11 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
     @Override
     public boolean keyUp(int keycode) {
-        if(keycode==Input.Keys.E && me!=-1) {
-	        if(getMe().canAtt) {
-                exclams.add(new Exclam(getMe().x+8-5, getMe().y));
+        if(keycode==Input.Keys.E) {
+	        if(me!=-1 && getMe().canAtt) {
+                exclams.add(new Exclam(getMe().x, getMe().y));
                 Packets.Attention a = new Packets.Attention();
-                a.x = getMe().x+8-5;
+                a.x = getMe().x;
                 a.y = getMe().y;
                 n.client.sendUDP(a);
                 playSound("attention");
@@ -345,6 +334,18 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 
         if(keycode==Input.Keys.SPACE && me==-1) {
             n = new Network(this, ip, tcp, udp);
+        }
+
+        if(keycode==Input.Keys.F) {
+            if(!Gdx.graphics.isFullscreen()) {
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+            } else {
+                Gdx.graphics.setWindowedMode(640, 480);
+            }
+        }
+
+        if(keycode==Input.Keys.ESCAPE) {
+            if(Gdx.graphics.isFullscreen()) Gdx.app.exit();
         }
         return false;
     }

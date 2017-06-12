@@ -1,12 +1,17 @@
 package net.sleepystudios.ld38;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Created by Tudor on 23/04/2017.
  */
 public class Player {
     LD38 game;
     int id, type=-1;
-    float x = 640/2, y = 480/2;
+    float x = LD38.SCREEN_W/2, y = LD38.SCREEN_H/2;
     boolean ai;
 
     public Player(LD38 game, int id) {
@@ -20,12 +25,12 @@ public class Player {
         this.type = game.chooseType();
         this.ai = ai;
 
-        x = LD38.rand(20, 640-20);
-        y = LD38.rand(20, 480-20);
+        x = LD38.rand(20, LD38.SCREEN_W-20);
+        y = LD38.rand(20, LD38.SCREEN_H-20);
     }
 
     int nextX = -1, nextY = -1, dir;
-    float tmrNextMove;
+    float tmrNextMove = 1;
     boolean moved;
     public void update(float delta) {
         float speed = 220*delta;
@@ -95,8 +100,8 @@ public class Player {
     public void handlePlantNext(float delta) {
         tmrNextMove+=delta;
         if(tmrNextMove>=2) {
-            nextX = LD38.rand(20, 640-20);
-            nextY = LD38.rand(20, 480-20);
+            nextX = LD38.rand(20, LD38.SCREEN_W-20);
+            nextY = LD38.rand(20, LD38.SCREEN_H-20);
             tmrNextMove = 0;
         }
     }
@@ -126,16 +131,33 @@ public class Player {
 
             // find a random thing
             if(game.entities.size()>0 && game.getCount(t)>0) {
-                int r = LD38.rand(0, game.entities.size()-1);
-                while(game.entities.get(r)!=null && game.entities.get(r).type!=t) {
-                    r = LD38.rand(0, game.entities.size()-1);
+                int r = -1;
+
+                HashMap<Integer, Integer> distances = new HashMap<Integer, Integer>();
+                for(int i=0; i<game.entities.size(); i++) {
+                    boolean canPut = true;
+                    if(game.entities.get(i).type!=t) canPut = false;
+                    if(t==LD38.FIRE) {
+                        if(game.entities.get(i).scale<game.entities.get(i).extinguishThresh) canPut = false;
+                    }
+
+                    if(canPut) {
+                        distances.put(i, getDistance(x, y, game.entities.get(i).x, game.entities.get(i).y));
+                        if(r==-1 || distances.get(i)<distances.get(r)) r = i;
+                    }
                 }
 
-                nextX = (int) game.entities.get(r).x;
-                nextY = (int) game.entities.get(r).y;
-                tmrNextMove = 0;
+                if(r>0 && r<game.entities.size() && game.entities.get(r)!=null) {
+                    nextX = (int) game.entities.get(r).x;
+                    nextY = (int) game.entities.get(r).y;
+                    tmrNextMove = 0;
+                }
             }
         }
+    }
+
+    private int getDistance(float x1, float y1, float x2, float y2) {
+        return (int) Math.hypot(x1-x2, y1-y2);
     }
 
     public void sendMove() {

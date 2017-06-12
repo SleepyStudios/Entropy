@@ -14,7 +14,7 @@ public class ActionMessage {
     public String text;
     private int size;
     private Color colour;
-    private float y = -1, tmrLife;
+    private float y, tmrLife;
     private BitmapFont font;
 
     public ActionMessage(String text, int size, Color colour) {
@@ -44,7 +44,7 @@ public class ActionMessage {
     public void render(SpriteBatch batch, LD38 game) {
         checkFont();
 
-        int index = LD38.actionMessages.indexOf(this);
+        int index = game.actionMessages.indexOf(this);
         float tar = game.getMe().y + 40 + (index*20);
 
         y+=(tar-y)*0.2f;
@@ -54,7 +54,7 @@ public class ActionMessage {
             if(font.getColor().a-0.1f>0) {
                 font.getColor().a-=0.1f;
             } else {
-                LD38.actionMessages.remove(this);
+                game.actionMessages.remove(this);
                 return;
             }
         }

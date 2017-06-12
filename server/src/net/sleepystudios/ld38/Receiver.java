@@ -19,8 +19,8 @@ public class Receiver extends Listener {
     }
 
     public String getRole(Player p) {
-        if(p.type==game.PLANT) return "planter";
-        if(p.type==game.FIRE) return "firestarter";
+        if(p.type==LD38.PLANT) return "planter";
+        if(p.type==LD38.FIRE) return "firestarter";
         return "waterer";
     }
 

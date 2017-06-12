@@ -12,7 +12,7 @@ public class Exclam {
     Sprite e;
 
     public Exclam(float x, float y) {
-        this.x = x;
+        this.x = x+3;
         this.y = y;
         tar = y+25;
     }
