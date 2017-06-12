@@ -45,7 +45,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
     public static ArrayList<ActionMessage> actionMessages = new ArrayList<ActionMessage>();
     ArrayList<Exclam> exclams = new ArrayList<Exclam>();
     float tmrMessages; int messageNum;
-    String ip = "";
+    String ip = ""; int tcp = 5000, udp = 5001;
 
     final int PLANT = 0, FIRE = 1, WATER = 2;
 	
@@ -61,7 +61,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 		    e.printStackTrace();
         }
 
-        n = new Network(this, ip);
+        n = new Network(this, ip, tcp, udp);
         c = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sr = new ShapeRenderer();
 
@@ -74,15 +74,31 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
 	}
 
 	public void readFile() throws Exception {
-        BufferedReader br = new BufferedReader(new FileReader("data.txt"));
+        BufferedReader br = new BufferedReader(new FileReader("config.dat"));
         try {
-            String line = br.readLine();
-            if(line.split(":")[1].contains("auto")) {
-                ip = getMasterIP();
-            } else {
-                ip = line.split(":")[1];
+            String line;
+            while((line = br.readLine()) != null) {
+                if(!line.startsWith("#")) {
+                    // ip
+                    if (line.startsWith("ip")) {
+                        if (line.split(":")[1].contains("auto")) {
+                            ip = getMasterIP();
+                        } else {
+                            ip = line.split(":")[1];
+                        }
+                    }
+
+                    // tcp
+                    if (line.startsWith("tcp")) {
+                        tcp = Integer.valueOf(line.split(":")[1]);
+                    }
+
+                    // udp
+                    if (line.startsWith("udp")) {
+                        udp = Integer.valueOf(line.split(":")[1]);
+                    }
+                }
             }
-            System.out.println(ip);
         } finally {
             br.close();
         }
@@ -328,7 +344,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         }
 
         if(keycode==Input.Keys.SPACE && me==-1) {
-            n = new Network(this, ip);
+            n = new Network(this, ip, tcp, udp);
         }
         return false;
     }

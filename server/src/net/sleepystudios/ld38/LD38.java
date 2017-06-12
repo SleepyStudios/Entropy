@@ -12,11 +12,11 @@ import java.util.Random;
  * Created by Tudor on 23/04/2017.
  */
 public class LD38 {
-    int tcp, udp;
+    int tcp = 5000, udp = 5001;
     Server server;
     ArrayList<Player> players = new ArrayList<Player>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
-    int botNum;
+    int botNum = 0;
     int idCount = 0;
 
     final int PLANT = 0, FIRE = 1, WATER = 2;
@@ -37,11 +37,27 @@ public class LD38 {
     }
 
     public void readFile() throws Exception {
-        BufferedReader br = new BufferedReader(new FileReader("server_data.txt"));
+        BufferedReader br = new BufferedReader(new FileReader("server_config.dat"));
         try {
-            tcp = Integer.valueOf(br.readLine().split(":")[1]);
-            udp = Integer.valueOf(br.readLine().split(":")[1]);
-            botNum = Integer.valueOf(br.readLine().split(":")[1]);
+            String line;
+            while((line = br.readLine()) != null) {
+                if(!line.startsWith("#")) {
+                    // tcp
+                    if (line.startsWith("tcp")) {
+                        tcp = Integer.valueOf(line.split(":")[1]);
+                    }
+
+                    // udp
+                    if (line.startsWith("udp")) {
+                        udp = Integer.valueOf(line.split(":")[1]);
+                    }
+
+                    // bots
+                    if (line.startsWith("bots")) {
+                        botNum = Integer.valueOf(line.split(":")[1]);
+                    }
+                }
+            }
         } finally {
             br.close();
         }

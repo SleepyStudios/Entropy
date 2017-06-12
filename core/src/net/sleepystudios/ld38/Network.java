@@ -12,7 +12,7 @@ import java.io.IOException;
 public class Network {
     public Client client;
 
-    public Network(LD38 game, String ip) {
+    public Network(LD38 game, String ip, int tcp, int udp) {
         game.players.clear();
         game.entities.clear();
         game.particles.clear();
@@ -25,7 +25,7 @@ public class Network {
         register();
 
         try {
-            client.connect(10000, ip, 5000, 5001);
+            client.connect(10000, ip, tcp, udp);
         } catch (IOException e) {
             System.out.println("Couldn't connect!");
         }

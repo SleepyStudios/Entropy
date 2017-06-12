@@ -1,0 +1,4 @@
+#make sure every property is on a new line!
+tcp:5000
+udp:5001
+bots:6
