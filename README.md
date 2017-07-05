@@ -24,6 +24,4 @@ To change the IP you login to clientside, edit the "data.txt". Leave it as "auto
 
 ## DOWNLOAD
 
-http://sleepystudios.net/downloads/entropy.zip (client + server)
-
-https://sleepystudios.itch.io/entropy (itch.io mirror)
+https://sleepystudios.itch.io/entropy 
