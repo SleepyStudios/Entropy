@@ -68,7 +68,7 @@ public class LD38 extends ApplicationAdapter implements ActionListener, InputPro
         Music music = Gdx.audio.newMusic(Gdx.files.internal("vibrations.mp3"));
         music.setVolume(0.8f);
         music.setLooping(true);
-        //music.play();
+        music.play();
 
         Gdx.input.setInputProcessor(this);
 	}
