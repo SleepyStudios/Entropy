@@ -15,8 +15,8 @@ public class LD38 {
     int tcp = 5000, udp = 5001;
     Server server;
 
-    ArrayList<Player> players = new ArrayList<>();
-    ArrayList<Entity> entities = new ArrayList<>();
+    ArrayList<Player> players = new ArrayList<Player>();
+    ArrayList<Entity> entities = new ArrayList<Entity>();
     int botNum, idCount;
 
     public static final int PLANT = 0, FIRE = 1, WATER = 2;
@@ -65,21 +65,23 @@ public class LD38 {
     }
 
     public void loop() {
-        boolean running = true;
+        long lastLoopTime = System.nanoTime();
+        final int TARGET_FPS = 30;
+        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
 
-        double ns = 1000000000.0 / 30.0;
-        float delta = 0;
-
-        long lastTime = System.nanoTime();
-
-        while (running) {
+        while (true)
+        {
             long now = System.nanoTime();
-            delta += (now - lastTime) / ns;
-            lastTime = now;
+            long updateLength = now - lastLoopTime;
+            lastLoopTime = now;
+            double delta = updateLength / ((double)OPTIMAL_TIME);
 
-            while (delta >= 1) {
-                update(delta/60f);
-                delta--;
+            update((float) delta / 60f);
+
+            try{
+                Thread.sleep((lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1000000);
+            } catch(Exception e) {
+                e.printStackTrace();
             }
         }
     }
